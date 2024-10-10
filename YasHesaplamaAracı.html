@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yaş Hesaplama Aracı</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .age-calculator-container {
+            width: 100%;
+            max-width: 1060px;
+            margin: 0 auto;
+            background-color: #FCFCFC;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h3.age-calculator-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #3C4852;
+        }
+
+        .age-calculator-input {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .age-calculator-input label {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #3C4852;
+        }
+
+        .age-calculator-input input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .age-calculator-input select {
+            width: calc(100% - 2px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .age-calculator-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .age-calculator-buttons button {
+            background-color: #1DA1F2;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;            
+            border-radius: 5px;
+        }
+
+        .age-calculator-buttons button:hover {
+            background-color: #1A91DA;
+        }
+
+        .age-result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #3C4852;
+            color: #fff; 
+            border-radius: 5px;
+        }
+
+        .age-result-box h4 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            color: #fff;
+        }
+
+        .age-result {
+            font-size: 16px;
+            background-color: #47535C;
+            padding: 10px;
+            font-weight: 600;
+        }
+
+        .age-result:not(:last-child) {
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+
+        .age-calculator-buttons-secondary {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .age-calculator-buttons-secondary button {
+            background-color: #47535C;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;            
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .age-calculator-container {
+                padding: 10px;
+            }
+
+            .age-calculator-buttons button, .age-calculator-buttons-secondary button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+
+            .age-calculator-input input, .age-calculator-input select {
+                padding: 8px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="age-calculator-container">
+        <h3 class="age-calculator-title">Yaş Hesaplama Aracı</h3>
+        <form id="ageForm">
+            <div class="age-calculator-input">
+                <label for="calculationType">Hesaplama Türünü Seçiniz:</label>
+                <select id="calculationType" onchange="toggleAdditionalDateInput()">
+                    <option value="today">Bugünden Yaş Hesaplama</option>
+                    <option value="differentDate">Farklı Bir Tarihte Yaşı Hesapla</option>
+                    <option value="eighteen">Hangi Tarihte 18 Yaşına Girdiğini/Gireceğini Öğren</option>
+                    <option value="nextBirthday">Doğum Gününe Kaç Gün Kaldığını Öğren</option>
+                </select>
+            </div>
+
+            <div class="age-calculator-input">
+                <label for="birthDate">Doğum Tarihinizi Giriniz:</label>
+                <input type="date" id="birthDate" required>
+            </div>
+
+            <div class="age-calculator-input" id="additionalDateInput" style="display: none;">
+                <label for="targetDate">Hedef Tarihi Giriniz:</label>
+                <input type="date" id="targetDate">
+            </div>
+
+            <div class="age-calculator-buttons">
+                <button type="button" onclick="hesapla()">Hesapla</button>
+                <button type="button" onclick="sifirla()">Sıfırla</button>
+            </div>
+        </form>
+
+        <div id="resultBox" class="age-result-box" style="display: none;">
+            <h4>Yaş Hesaplama Sonucu</h4>
+            <div class="age-result" id="ageResult"></div>
+            <div class="age-result" id="extraResult"></div>
+            <div class="age-result" id="exxtraResult"></div>
+
+            <div class="age-calculator-buttons-secondary">
+                <button onclick="copyResult()">Kopyala</button>
+                <button onclick="shareResult()">Paylaş</button>
+                <button onclick="printResult()">Yazdır</button>
+            </div>
+        </div>
+    </div>   
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const today = new Date().toISOString().split('T')[0]; 
+            document.getElementById('birthDate').setAttribute('max', today);
+            document.getElementById('targetDate').setAttribute('max', today);
+        });
+    
+        function toggleAdditionalDateInput() {
+            const calculationType = document.getElementById('calculationType').value;
+            const additionalDateInput = document.getElementById('additionalDateInput');
+            if (calculationType === 'differentDate') {
+                additionalDateInput.style.display = 'block';
+            } else {
+                additionalDateInput.style.display = 'none';
+            }
+        }
+    
+        function hesapla() {
+    const birthDateInput = document.getElementById('birthDate').value;
+    const birthDate = new Date(birthDateInput);
+    const today = new Date();
+    const calculationType = document.getElementById('calculationType').value;
+    let targetDate = today;
+
+    if (isNaN(birthDate.getTime())) {
+        alert('Lütfen geçerli bir doğum tarihi giriniz!');
+        return;
+    }
+
+    if (birthDate > today) {
+        alert('Doğum tarihi, bugünden önceki bir tarih olmalıdır!');
+        return;
+    }
+
+    if (calculationType === 'differentDate') {
+        targetDate = new Date(document.getElementById('targetDate').value);
+        if (isNaN(targetDate.getTime())) {
+            alert('Lütfen geçerli bir hedef tarihi giriniz!');
+            return;
+        }
+
+        if (targetDate > today) {
+            alert('Hedef tarihi, bugünden önceki bir tarih olmalıdır!');
+            return;
+        }
+
+        
+        let ageYears = targetDate.getFullYear() - birthDate.getFullYear();
+        let ageMonths = targetDate.getMonth() - birthDate.getMonth();
+        let ageDays = targetDate.getDate() - birthDate.getDate();
+
+        if (ageDays < 0) {
+            ageMonths--;
+            const previousMonth = new Date(targetDate.getFullYear(), targetDate.getMonth(), 0).getDate();
+            ageDays += previousMonth;
+        }
+
+        if (ageMonths < 0) {
+            ageYears--;
+            ageMonths += 12;
+        }
+
+        const resultText = `${ageYears} yaşında oluyorsunuz`;
+        document.getElementById('ageResult').innerText = `${targetDate.toLocaleDateString('tr-TR')} Tarihi İtibariyle Yaşınız: ${resultText}`;
+
+        const nextBirthday = new Date(targetDate.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+        if (targetDate > nextBirthday) {
+            nextBirthday.setFullYear(targetDate.getFullYear() + 1);
+        }
+        const daysUntilNextBirthday = Math.ceil((nextBirthday - targetDate) / (1000 * 60 * 60 * 24));
+        const totalDaysLived = Math.floor((targetDate - birthDate) / (1000 * 60 * 60 * 24));
+
+        document.getElementById('extraResult').innerText = `${targetDate.toLocaleDateString('tr-TR')} tarihi itibariyle yeni yaşınıza girmenize ${daysUntilNextBirthday} gün kaldı.`;
+        document.getElementById('exxtraResult').innerText = `Yaşanılan Gün Sayısı: ${targetDate.toLocaleDateString('tr-TR')} tarihi dahil toplam ${totalDaysLived.toLocaleString()} gün yaşadınız.`;
+
+    } else if (calculationType === 'eighteen') {
+        targetDate = new Date(birthDate);
+        targetDate.setFullYear(birthDate.getFullYear() + 18);
+
+        document.getElementById('ageResult').innerText = `18 Yaşına Gireceğiniz Tarih: ${targetDate.toLocaleDateString('tr-TR')}`;
+
+        const daysUntilEighteen = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
+
+        if (daysUntilEighteen > 0) {
+            document.getElementById('extraResult').innerText = `Şu an ${Math.floor((today - birthDate) / (1000 * 60 * 60 * 24 * 365.25))} yaşındasınız.`;
+            document.getElementById('exxtraResult').innerText = ` ${daysUntilEighteen} gün sonra 18 yaşında olacaksınız.`;
+        } else {
+            const daysSinceEighteen = Math.abs(daysUntilEighteen);
+            const ageYears = today.getFullYear() - birthDate.getFullYear();
+            document.getElementById('extraResult').innerText = `Şu an ${ageYears} yaşındasınız.`;
+            document.getElementById('exxtraResult').innerText = `${daysSinceEighteen} gün önce 18 yaşına girdiniz.`;
+        }
+
+    } else if (calculationType === 'nextBirthday') {
+        const nextBirthday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+        if (today > nextBirthday) {
+            nextBirthday.setFullYear(today.getFullYear() + 1);
+        }
+
+        const daysUntilNextBirthday = Math.ceil((nextBirthday - today) / (1000 * 60 * 60 * 24));
+        const dayOfWeek = nextBirthday.toLocaleDateString('tr-TR', { weekday: 'long' });
+
+        document.getElementById('ageResult').innerText = `Bir sonraki doğum gününüze: ${daysUntilNextBirthday} gün kaldı.`;
+        document.getElementById('extraResult').innerText = `Bir sonraki doğum günü tarihiniz: ${nextBirthday.toLocaleDateString('tr-TR')} (${dayOfWeek}).`;
+        document.getElementById('exxtraResult').innerText = `Haftanın Hangi Günüydü: Doğduğunuz gün ${birthDate.toLocaleDateString('tr-TR', { weekday: 'long' })}.`;
+
+    } else {
+        let ageYears = today.getFullYear() - birthDate.getFullYear();
+        let ageMonths = today.getMonth() - birthDate.getMonth();
+        let ageDays = today.getDate() - birthDate.getDate();
+
+        if (ageDays < 0) {
+            ageMonths--;
+            const previousMonth = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+            ageDays += previousMonth;
+        }
+
+        if (ageMonths < 0) {
+            ageYears--;
+            ageMonths += 12;
+        }
+
+        const resultText = `${ageYears} yaş, ${ageMonths} ay, ${ageDays} gün`;
+        document.getElementById('ageResult').innerText = `Yaşınız: ${resultText}`;
+
+        const totalDaysLived = Math.floor((today - birthDate) / (1000 * 60 * 60 * 24));
+        document.getElementById('extraResult').innerText = `Toplam Yaşanılan Gün Sayısı: ${totalDaysLived.toLocaleString()} gün.`;
+        document.getElementById('exxtraResult').innerText = `Haftanın Hangi Günüydü: Doğduğunuz gün ${birthDate.toLocaleDateString('tr-TR', { weekday: 'long' })}.`;
+    }
+
+    document.getElementById('resultBox').style.display = 'block';
+}
+        
+        function sifirla() {
+            document.getElementById('ageForm').reset();
+            document.getElementById('resultBox').style.display = 'none';
+            document.getElementById('additionalDateInput').style.display = 'none';
+        }
+    
+        function copyResult() {
+            const resultText = document.getElementById('resultBox').innerText;
+            navigator.clipboard.writeText(resultText).then(() => {
+                alert("Sonuç kopyalandı!");
+            }).catch(err => {
+                alert("Sonuç kopyalanamadı: " + err);
+            });
+        }
+    
+        function printResult() {
+            window.print();
+        }
+    
+        function shareResult() {
+            const resultText = document.getElementById('resultBox').innerText;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Yaş Hesaplama Sonucu',
+                    text: resultText
+                }).then(() => {
+                    console.log('Sonuç paylaşıldı');
+                }).catch(err => {
+                    console.error('Paylaşma hatası: ', err);
+                });
+            } else {
+                alert("Paylaşma özelliği tarayıcınız tarafından desteklenmiyor.");
+            }
+        }
+    </script>
+   
+</body>
+</html>
