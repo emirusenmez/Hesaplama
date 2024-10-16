@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5. Sınıf Puan Hesaplama</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            max-width: 500px;
+            margin: auto;
+            background-color: #FCFCFC;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .calculator-input {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calculator-input label {
+            flex: 1;
+            font-weight: bold;
+        }
+
+        input.score, input#sec1Puan, input#sec2Puan, input#sec3Puan {
+            flex: 1;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-left: 10px;
+            max-width: 80px;
+        }
+
+        select {
+            flex: 1;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-left: 10px;
+            max-width: 230px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .buttons button {
+            background-color: #1DA1F2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .buttons button:hover {
+            background-color: #1A91DA;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #3C4852;
+            border-radius: 8px;
+            display: none;
+            color: white;
+        }
+
+        .result-box h4 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .result-actions {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .result-actions button {
+            background-color: #47535C;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            color: #fff;
+        }
+
+        .result-row span {
+            font-weight: 600;
+        }
+        div#result {
+            background-color: #47535C;
+        }
+
+        /* Responsive tasarım medya sorguları */
+        @media (max-width: 768px) {
+            .calculator-input {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            input.score, input#sec1Puan, input#sec2Puan, input#sec3Puan {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            select {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .buttons button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .result-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .result-actions button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .calculator-container {
+                padding: 10px;
+            }
+
+            .result-box {
+                padding: 10px;
+            }
+
+            .buttons button {
+                padding: 8px 10px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="calculator-container">
+        <h3>5. Sınıf Puan Hesaplama</h3>
+
+        <form id="gradeForm">
+            <div class="calculator-input">
+                <label>Beden Eğitimi (2 saat):</label>
+                <input type="number" class="score" id="beden" placeholder="Örn. 75.50" max="100" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label>Bilişim Tekno. (2 saat):</label>
+                <input type="number" class="score" id="bilisim" placeholder="Örn. 75.50" max="100" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label>Din Kültürü (2 saat):</label>
+                <input type="number" class="score" id="din" placeholder="Örn. 75.50" max="100" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label>Fen Bilimleri (4 saat):</label>
+                <input type="number" class="score" id="fen" placeholder="Örn. 75.50" max="100" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label>Görsel Sanatlar (1 saat):</label>
+                <input type="number" class="score" id="gorsel" placeholder="Örn. 75.50" max="100" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label>Matematik (5 saat):</label>
+                <input type="number" class="score" id="matematik" placeholder="Örn. 75.50" max="100" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label>Müzik (1 saat):</label>
+                <input type="number" class="score" id="muzik" placeholder="Örn. 75.50" max="100" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label>Sosyal Bilgiler (3 saat):</label>
+                <input type="number" class="score" id="sosyal" placeholder="Örn. 75.50" max="100" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label>Türkçe (6 saat):</label>
+                <input type="number" class="score" id="turkce" placeholder="Örn. 75.50" max="100" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label>Yabancı Dil (3 saat):</label>
+                <input type="number" class="score" id="yabanci" placeholder="Örn. 75.50" max="100" min="0">
+            </div>
+
+            <h4>Seçmeli Dersler</h4>
+
+            <div class="calculator-input">
+                <label>1. Seçmeli Ders:</label>
+                <select id="sec1" class="score">
+                    <option value="1">1. Seçmeli Ders (Haftada 1 saat)</option>
+                    <option value="2">1. Seçmeli Ders (Haftada 2 saat)</option>
+                    <option value="3">1. Seçmeli Ders (Haftada 3 saat)</option>
+                    <option value="4">1. Seçmeli Ders (Haftada 4 saat)</option>
+                </select>
+                <input type="number" id="sec1Puan" placeholder="Örn. 75.50" max="100" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label>2. Seçmeli Ders:</label>
+                <select id="sec2" class="score">
+                    <option value="1">2. Seçmeli Ders (Haftada 1 saat)</option>
+                    <option value="2">2. Seçmeli Ders (Haftada 2 saat)</option>
+                    <option value="3">2. Seçmeli Ders (Haftada 3 saat)</option>
+                    <option value="4">2. Seçmeli Ders (Haftada 4 saat)</option>
+                </select>
+                <input type="number" id="sec2Puan" placeholder="Örn. 75.50" max="100" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label>3. Seçmeli Ders:</label>
+                <select id="sec3" class="score">
+                    <option value="1">3. Seçmeli Ders (Haftada 1 saat)</option>
+                    <option value="2">3. Seçmeli Ders (Haftada 2 saat)</option>
+                    <option value="3">3. Seçmeli Ders (Haftada 3 saat)</option>
+                    <option value="4">3. Seçmeli Ders (Haftada 4 saat)</option>
+                </select>
+                <input type="number" id="sec3Puan" placeholder="Örn. 75.50" max="100" min="0">
+            </div>
+
+            <div class="buttons">
+                <button type="button" onclick="calculate()">Hesapla</button>
+                <button type="button" onclick="resetForm()">Temizle</button>
+            </div>
+        </form>
+
+        <div id="resultBox" class="result-box">
+            <h4>Sonuç</h4>
+            <div id="result"></div>
+            <div class="divider"></div>
+            <div class="result-actions">
+                <button onclick="copyResults()">Kopyala</button>
+                <button onclick="shareResults()">Paylaş</button>
+                <button onclick="printResults()">Yazdır</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const dersler = [
+                { puan: parseFloat(document.getElementById('beden').value) || 0, saat: 2 },
+                { puan: parseFloat(document.getElementById('bilisim').value) || 0, saat: 2 },
+                { puan: parseFloat(document.getElementById('din').value) || 0, saat: 2 },
+                { puan: parseFloat(document.getElementById('fen').value) || 0, saat: 4 },
+                { puan: parseFloat(document.getElementById('gorsel').value) || 0, saat: 1 },
+                { puan: parseFloat(document.getElementById('matematik').value) || 0, saat: 5 },
+                { puan: parseFloat(document.getElementById('muzik').value) || 0, saat: 1 },
+                { puan: parseFloat(document.getElementById('sosyal').value) || 0, saat: 3 },
+                { puan: parseFloat(document.getElementById('turkce').value) || 0, saat: 6 },
+                { puan: parseFloat(document.getElementById('yabanci').value) || 0, saat: 3 },
+                { puan: parseFloat(document.getElementById('sec1Puan').value) || 0, saat: parseInt(document.getElementById('sec1').value) },
+                { puan: parseFloat(document.getElementById('sec2Puan').value) || 0, saat: parseInt(document.getElementById('sec2').value) },
+                { puan: parseFloat(document.getElementById('sec3Puan').value) || 0, saat: parseInt(document.getElementById('sec3').value) }
+            ];
+
+            for (let i = 0; i < dersler.length; i++) {
+                if (dersler[i].puan > 100 || dersler[i].puan < 0 || dersler[i].puan === 0) {
+                    alert("Lütfen tüm dersleri 0 ile 100 arasında bir puan ile doldurun.");
+                    return;
+                }
+            }
+
+            let totalPuan = 0;
+            let totalSaat = 0;
+
+            dersler.forEach(ders => {
+                totalPuan += ders.puan * ders.saat;
+                totalSaat += ders.saat;
+            });
+
+            const ortalama = totalPuan / totalSaat;
+            let resultText = `Genel Ortalama: ${ortalama.toFixed(2)}<br>`;
+
+            if (ortalama >= 70 && ortalama <= 84.99) {
+                resultText += 'Sonuç: Tebrikler, Teşekkür aldınız!';
+            } else if (ortalama >= 85) {
+                resultText += 'Sonuç: Tebrikler, Takdir aldınız!';
+            } 
+
+            document.getElementById('result').innerHTML = resultText;
+            document.getElementById('resultBox').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('gradeForm').reset();
+            document.getElementById('resultBox').style.display = 'none';
+        }
+
+        function copyResults() {
+            const textToCopy = document.getElementById('resultBox').innerText;
+
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(textToCopy)
+                    .then(() => {
+                        alert('Sonuçlar kopyalandı!');
+                    })
+                    .catch((err) => {
+                        console.error('Kopyalama başarısız oldu:', err);
+                        alert('Kopyalama başarısız oldu. Lütfen tekrar deneyin.');
+                    });
+            }
+        }
+
+        function shareResults() {
+            const textToShare = document.getElementById('resultBox').innerText;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Sonuçlar',
+                    text: textToShare,
+                    url: window.location.href 
+                }).then(() => {
+                    alert('Paylaşım başarılı!');
+                }).catch((error) => {
+                    console.error('Paylaşım başarısız oldu:', error);
+                });
+            } else {
+                alert('Bu tarayıcı paylaşma özelliğini desteklemiyor. Lütfen manuel olarak kopyalayarak paylaşın.');
+            }
+        }
+
+        function printResults() {
+            window.print();
+        }
+    </script>
+
+</body>
+</html>
