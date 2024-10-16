@@ -105,22 +105,10 @@
             border-radius: 5px;
         }
 
-        .result-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #ddd;
-            color: #fff;
-        }
-
-        .result-row span {
-            font-weight: 600;
-        }
         div#result {
             background-color: #47535C;
         }
 
-        /* Responsive tasarım medya sorguları */
         @media (max-width: 768px) {
             .calculator-input {
                 flex-direction: column;
@@ -301,6 +289,17 @@
                 { puan: parseFloat(document.getElementById('sec3Puan').value) || 0, saat: parseInt(document.getElementById('sec3').value) }
             ];
 
+            // Minimum puan kontrolü
+            let belgeAlabilirMi = true;
+            if (parseFloat(document.getElementById('turkce').value) < 55) {
+                belgeAlabilirMi = false;
+            }
+            dersler.forEach(ders => {
+                if (ders.puan < 45) {
+                    belgeAlabilirMi = false;
+                }
+            });
+
             for (let i = 0; i < dersler.length; i++) {
                 if (dersler[i].puan > 100 || dersler[i].puan < 0 || dersler[i].puan === 0) {
                     alert("Lütfen tüm dersleri 0 ile 100 arasında bir puan ile doldurun.");
@@ -323,7 +322,12 @@
                 resultText += 'Sonuç: Tebrikler, Teşekkür aldınız!';
             } else if (ortalama >= 85) {
                 resultText += 'Sonuç: Tebrikler, Takdir aldınız!';
-            } 
+            }
+
+            // Minimum puan kontrolü uyarısı
+            if (!belgeAlabilirMi) {
+                resultText = `Genel Ortalama: ${ortalama.toFixed(2)}<br>Maalesef herhangi bir belge almaya hak kazanamadınız. (Puan ortalamanız takdir almak için yeterli ancak takdir belgesi alabilmek için ön koşul olarak Türkçe dersinden 55,00, diğer derslerin her birinden 45,00 puandan aşağı bir puanınız olmamalıdır.)`;
+            }
 
             document.getElementById('result').innerHTML = resultText;
             document.getElementById('resultBox').style.display = 'block';
