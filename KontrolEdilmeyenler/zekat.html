@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zekat Hesaplama Aracı</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .zekat-calculator-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #FCFCFC;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h3.zekat-calculator-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .zekat-calculator-input {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .zekat-calculator-input label {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        .zekat-calculator-input input {
+            width: calc(100% - 10px); /* Her iki input yan yana gelsin diye */
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        .zekat-calculator-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        button {
+            background-color: #1DA1F2;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;            
+            border-radius: 5px;
+            width: calc(20% - 10px); /* Butonları yan yana hizalamak için */
+        }
+
+        button:hover {
+            background-color: #1A91DA;
+        }
+
+        .zekat-result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #36454f;
+            color: #fff;
+            display: none;
+            border-radius: 10px;
+        }
+
+        .zekat-result-box h4 {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .zekat-result {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: #ccc;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="zekat-calculator-container">
+        <h3 class="zekat-calculator-title">Zekat Hesaplama Aracı</h3>
+        <form id="zekatForm">
+            <div class="zekat-calculator-input">
+                <div>
+                    <label for="tlAmount">Elinizdeki TL miktarı</label><br> <br>
+                    <input type="number" id="tlAmount" required>
+                </div>
+                <div>
+                    <label for="goldAmount">Elinizdeki gram altın miktarı</label><br> <br>
+                    <input type="number" id="goldAmount" required>
+                </div>
+                <div>
+                    <label for="euroAmount">Elinizdeki Euro miktarı</label><br> <br>
+                    <input type="number" id="euroAmount" required>
+                </div>
+                <div>
+                    <label for="usdAmount">Elinizdeki Dolar miktarı</label><br><br>
+                    <input type="number" id="usdAmount" required>
+                </div>
+                <div>
+                    <label for="otherAssets">Diğer varlıklarınızın toplam değeri (TL):</label><br> <br>
+                    <input type="number" id="otherAssets" required>
+                </div>
+                <div>
+                    <label for="debts">Toplam borçlarınız (TL):</label><br><br>
+                    <input type="number" id="debts" required>
+                </div>
+            </div>
+            <div class="zekat-calculator-buttons">
+                <button type="button" onclick="hesapla()">Hesapla</button>
+                <button type="button" onclick="sifirla()">Sıfırla</button>
+            </div>
+        </form>
+
+        <div id="resultBox" class="zekat-result-box">
+            <h4>Zekat Hesaplama Sonucu</h4>
+            <div class="zekat-result" id="totalWealth"></div>
+            <hr>
+            <div class="zekat-result" id="zekatAmount"></div>
+        </div>
+    </div>   
+
+    <script>
+        async function fetchExchangeRates() {
+            const response = await fetch('https://api.bigpara.hurriyet.com.tr/doviz/headerlist/anasayfa');
+            const data = await response.json();
+            return data.data;
+        }
+
+        async function hesapla() {
+            const tlAmount = parseFloat(document.getElementById('tlAmount').value);
+            const goldAmount = parseFloat(document.getElementById('goldAmount').value);
+            const euroAmount = parseFloat(document.getElementById('euroAmount').value);
+            const usdAmount = parseFloat(document.getElementById('usdAmount').value);
+            const otherAssets = parseFloat(document.getElementById('otherAssets').value);
+            const debts = parseFloat(document.getElementById('debts').value);
+
+            if (isNaN(tlAmount) || isNaN(goldAmount) || isNaN(euroAmount) || isNaN(usdAmount) || isNaN(otherAssets) || isNaN(debts)) {
+                alert('Lütfen tüm alanları doldurunuz!');
+                return;
+            }
+
+            const exchangeRates = await fetchExchangeRates();
+            const goldRate = exchangeRates.find(rate => rate.SEMBOL === 'GLDGR').ALIS;
+            const euroRate = exchangeRates.find(rate => rate.SEMBOL === 'EURTRY').ALIS;
+            const usdRate = exchangeRates.find(rate => rate.SEMBOL === 'USDTRY').ALIS;
+
+            const goldValue = goldAmount * goldRate;
+            const euroValue = euroAmount * euroRate;
+            const usdValue = usdAmount * usdRate;
+
+            let totalValue = tlAmount + goldValue + euroValue + usdValue + otherAssets - debts;
+
+            const goldThreshold = 80.18 * goldRate;
+
+            if (totalValue < goldThreshold) {
+                document.getElementById('totalWealth').innerText = `Toplam mal varlığınız: ${totalValue.toFixed(2)} TL`;
+                document.getElementById('zekatAmount').innerText = `Bu yıl geliriniz 80,18 gram altın değerinden düşük. Bu yüzden zekat vermenize gerek yok.`;
+            } else {
+                const zekatAmount = totalValue * 0.025;
+                document.getElementById('totalWealth').innerText = `Elinizdeki toplam mal varlığı: ${totalValue.toFixed(2)} TL`;
+                document.getElementById('zekatAmount').innerText = `Ödemeniz gereken zekat: ${zekatAmount.toFixed(2)} TL`;
+            }
+
+            document.getElementById('resultBox').style.display = 'block';
+        }
+
+        function sifirla() {
+            document.getElementById('zekatForm').reset();
+            document.getElementById('resultBox').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

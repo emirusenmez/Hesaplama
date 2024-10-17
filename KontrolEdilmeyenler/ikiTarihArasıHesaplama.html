@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İki Tarih Arası Hesaplama</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            width: 100%;
+            max-width: 1060px;
+            margin: 0 auto;
+            background-color: #FCFCFC;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h3.calculator-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #3C4852;
+        }
+
+        .calculator-input {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calculator-input label {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #3C4852;
+        }
+
+        .calculator-input input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .calculator-buttons {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .calculator-buttons button {
+            background-color: #1DA1F2;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;            
+            border-radius: 5px;
+        }
+
+        .calculator-buttons button:hover {
+            background-color: #1A91DA;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #3C4852;
+            color: #fff; 
+            border-radius: 5px;
+        }
+
+        .result-box h4 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            color: #fff;
+        }
+
+        .result {
+            font-size: 16px;
+            background-color: #47535C;
+            padding: 10px;
+            font-weight: 600;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .result:last-child {
+            border-bottom: none;
+        }
+
+        .additional-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .additional-buttons button {
+            background-color: #47535C;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        .additional-buttons button:hover {
+            background-color: #3C4852;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h3 class="calculator-title">İki Tarih Arası Hesaplama</h3>
+        <form id="dateForm">
+            <div class="calculator-input">
+                <label for="startDate">Başlangıç Tarihi:</label>
+                <input type="date" id="startDate" required>
+            </div>
+
+            <div class="calculator-input">
+                <label for="endDate">Bitiş Tarihi:</label>
+                <input type="date" id="endDate" required>
+            </div>
+
+            <div class="calculator-buttons">
+                <button type="button" onclick="hesapla()">Hesapla</button>
+                <button type="button" onclick="sifirla()">Sıfırla</button>
+            </div>
+        </form>
+
+        <div id="resultBox" class="result-box" style="display: none;">
+            <h4>Sonuç</h4>
+            <div class="result" id="calculationResult"></div>
+
+            <div class="additional-buttons">
+                <button onclick="copyResult()">Kopyala</button>
+                <button onclick="shareResult()">Paylaş</button>
+                <button onclick="printResult()">Yazdır</button>
+            </div>
+        </div>
+    </div>   
+
+    <script>
+        function hesapla() {
+            const startDate = new Date(document.getElementById('startDate').value);
+            const endDate = new Date(document.getElementById('endDate').value);
+            let resultText = "";
+
+            if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+                alert('Lütfen geçerli tarih giriniz!');
+                return;
+            }
+
+            if (startDate > endDate) {
+                alert('Başlangıç tarihi, bitiş tarihinden önce olmalıdır.');
+                return;
+            }
+
+            const dayNames = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+
+            const totalDays = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24));
+            const years = Math.floor(totalDays / 365);
+            const months = Math.floor((totalDays % 365) / 30);
+            const days = totalDays % 30;
+            const weeks = (totalDays / 7).toFixed(2);
+
+            resultText += `
+                <p>Girdiğiniz Tarih Aralığı: ${startDate.toLocaleDateString('tr-TR')} ${dayNames[startDate.getDay()]} ile ${endDate.toLocaleDateString('tr-TR')} ${dayNames[endDate.getDay()]} arası</p>
+                <hr>
+                <p>Girdiğiniz Tarihler Arasındaki Gün Sayısı: ${totalDays} gün</p>
+                <hr>
+                <p>Bu Tarihler Arasındaki Süre: ${years} yıl ${months} ay ${days} gün</p>
+                <hr>
+                <p>Girdiğiniz Tarihler Arasındaki Hafta Sayısı: ${weeks} hafta (${totalDays} gün)</p>
+            `;
+
+            document.getElementById('calculationResult').innerHTML = resultText;
+            document.getElementById('resultBox').style.display = 'block';
+        }
+
+        function sifirla() {
+            document.getElementById('dateForm').reset();
+            document.getElementById('resultBox').style.display = 'none';
+        }
+
+        function copyResult() {
+            const resultText = document.getElementById('calculationResult').innerText;
+            navigator.clipboard.writeText(resultText).then(() => {
+                alert("Sonuç kopyalandı!");
+            }).catch(err => {
+                alert("Sonuç kopyalanamadı: " + err);
+            });
+        }
+
+        function printResult() {
+            window.print();
+        }
+
+        function shareResult() {
+            const resultText = document.getElementById('calculationResult').innerText;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'İki Tarih Arası Hesaplama Sonucu',
+                    text: resultText
+                }).then(() => {
+                    console.log('Sonuç paylaşıldı');
+                }).catch(err => {
+                    console.error('Paylaşma hatası: ', err);
+                });
+            } else {
+                alert("Paylaşma özelliği tarayıcınız tarafından desteklenmiyor.");
+            }
+        }
+    </script>
+</body>
+</html>

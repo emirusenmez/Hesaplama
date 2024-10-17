@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İndirim Hesaplama Aracı</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #FCFCFC;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h3.calculator-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #3C4852;
+        }
+
+        .calculator-input {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calculator-input label {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #3C4852;
+        }
+
+        .calculator-input input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .calculator-input select {
+            width: calc(100%);
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .calculator-buttons {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .calculator-buttons button {
+            background-color: #1DA1F2;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;            
+            border-radius: 5px;
+        }
+
+        .calculator-buttons button:hover {
+            background-color: #1A91DA;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #3C4852;
+            color: #fff; 
+            border-radius: 5px;
+        }
+
+        .result-box h4 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            color: #fff;
+        }
+
+        .result {
+            font-size: 16px;
+            background-color: #47535C;
+            padding: 10px;
+            font-weight: 600;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .result:last-child {
+            border-bottom: none;
+        }
+
+        .additional-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .additional-buttons button {
+            background-color: #47535C;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        .additional-buttons button:hover {
+            background-color: #3C4852;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-container {
+                padding: 10px;
+            }
+
+            .calculator-buttons button, .additional-buttons button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+
+            .calculator-input input, .calculator-input select {
+                padding: 8px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h3 class="calculator-title">İndirim Hesaplama Aracı</h3>
+        <form id="discountForm">
+            <div class="calculator-input">
+                <label for="operationType">İşlem:</label>
+                <select id="operationType">
+                    <option value="discountedPrice">İndirimli fiyat hesaplama</option>
+                    <option value="normalPrice">Normal fiyat hesaplama</option>
+                    <option value="discountRate">İndirim oranı hesaplama</option>
+                </select>
+            </div>
+
+            <div class="calculator-input" id="normalPriceInput">
+                <label for="normalPrice">Normal Fiyat:</label>
+                <input type="number" id="normalPrice" step="0.01" placeholder="Örn: 1000">
+            </div>
+
+            <div class="calculator-input" id="discountedPriceInput" style="display: none;">
+                <label for="discountedPrice">İndirimli Fiyat:</label>
+                <input type="number" id="discountedPrice" step="0.01" placeholder="Örn: 900">
+            </div>
+
+            <div class="calculator-input" id="discountRateInput">
+                <label for="discountRate">İndirim Oranı (%):</label>
+                <input type="number" id="discountRate" step="0.01" placeholder="Örn: 10">
+            </div>
+
+
+            <div class="calculator-buttons">
+                <button type="button" onclick="calculate()">Hesapla</button>
+                <button type="button" onclick="resetForm()">Sıfırla</button>
+            </div>
+        </form>
+
+        <div id="resultBox" class="result-box" style="display: none;">
+            <h4>Sonuç</h4>
+            <div class="result" id="calculationResult"></div>
+
+            <div class="additional-buttons">
+                <button onclick="copyResult()">Kopyala</button>
+                <button onclick="shareResult()">Paylaş</button>
+                <button onclick="printResult()">Yazdır</button>
+            </div>
+        </div>
+    </div>   
+
+    <script>
+        document.getElementById('operationType').addEventListener('change', function() {
+            const operation = this.value;
+            const normalPriceInput = document.getElementById('normalPriceInput');
+            const discountRateInput = document.getElementById('discountRateInput');
+            const discountedPriceInput = document.getElementById('discountedPriceInput');
+
+            if (operation === 'discountedPrice') {
+                normalPriceInput.style.display = 'block';
+                discountRateInput.style.display = 'block';
+                discountedPriceInput.style.display = 'none';
+            } else if (operation === 'normalPrice') {
+                normalPriceInput.style.display = 'none';
+                discountRateInput.style.display = 'block';
+                discountedPriceInput.style.display = 'block';
+            } else if (operation === 'discountRate') {
+                normalPriceInput.style.display = 'block';
+                discountRateInput.style.display = 'none';
+                discountedPriceInput.style.display = 'block';
+            }
+        });
+
+        function calculate() {
+            const operation = document.getElementById('operationType').value;
+            const normalPrice = parseFloat(document.getElementById('normalPrice').value);
+            const discountedPrice = parseFloat(document.getElementById('discountedPrice').value);
+            const discountRate = parseFloat(document.getElementById('discountRate').value);
+            let resultText = '';
+
+            if (operation === 'discountedPrice') {
+                if (isNaN(normalPrice) || normalPrice <= 0 || isNaN(discountRate) || discountRate < 0) {
+                    alert("Lütfen geçerli bir normal fiyat ve indirim oranı giriniz.");
+                    return;
+                }
+                const discountAmount = (normalPrice * discountRate) / 100;
+                const finalPrice = normalPrice - discountAmount;
+                resultText = `
+                    Normal Fiyat: ${normalPrice.toFixed(2)} TL
+                    <hr>
+                    İndirim Tutarı: ${discountAmount.toFixed(2)} TL
+                    <hr>
+                    İndirimli Fiyat: ${finalPrice.toFixed(2)} TL
+                    <hr>
+                    İndirim Oranı: %${discountRate.toFixed(2)}
+                `;
+            } else if (operation === 'normalPrice') {
+                if (isNaN(discountedPrice) || discountedPrice <= 0 || isNaN(discountRate) || discountRate < 0) {
+                    alert("Lütfen geçerli bir indirimli fiyat ve indirim oranı giriniz.");
+                    return;
+                }
+                const normalPriceCalculated = discountedPrice / (1 - discountRate / 100);
+                const discountAmount = normalPriceCalculated - discountedPrice;
+                resultText = `
+                    Normal Fiyat: ${normalPriceCalculated.toFixed(2)} TL
+                    <hr>
+                    İndirim Tutarı: ${discountAmount.toFixed(2)} TL
+                    <hr>
+                    İndirimli Fiyat: ${discountedPrice.toFixed(2)} TL
+                    <hr>
+                    İndirim Oranı: %${discountRate.toFixed(2)}
+                `;
+            } else if (operation === 'discountRate') {
+                if (isNaN(normalPrice) || normalPrice <= 0 || isNaN(discountedPrice) || discountedPrice <= 0 || discountedPrice >= normalPrice) {
+                    alert("Lütfen geçerli bir normal fiyat ve indirimli fiyat giriniz. İndirimli fiyat, normal fiyattan büyük veya eşit olamaz.");
+                    return;
+                }
+                const discountAmount = normalPrice - discountedPrice;
+                const discountRateCalculated = (discountAmount / normalPrice) * 100;
+                resultText = `
+                    Normal Fiyat: ${normalPrice.toFixed(2)} TL
+                    <hr>
+                    İndirim Tutarı: ${discountAmount.toFixed(2)} TL
+                    <hr>
+                    İndirimli Fiyat: ${discountedPrice.toFixed(2)} TL
+                    <hr>
+                    İndirim Oranı: %${discountRateCalculated.toFixed(2)}
+                `;
+            }
+
+            document.getElementById('calculationResult').innerHTML = resultText;
+            document.getElementById('resultBox').style.display = 'block';
+        }
+        
+        function resetForm() {
+            document.getElementById('discountForm').reset();
+            document.getElementById('resultBox').style.display = 'none';
+        }
+
+        function copyResult() {
+            const resultText = document.getElementById('calculationResult').innerText;
+            navigator.clipboard.writeText(resultText).then(() => {
+                alert("Sonuç kopyalandı!");
+            }).catch(err => {
+                alert("Sonuç kopyalanamadı: " + err);
+            });
+        }
+
+        function printResult() {
+            window.print();
+        }
+
+        function shareResult() {
+            const resultText = document.getElementById('calculationResult').innerText;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'İndirim Hesaplama Sonucu',
+                    text: resultText
+                }).then(() => {
+                    console.log('Sonuç paylaşıldı');
+                }).catch(err => {
+                    console.error('Paylaşma hatası: ', err);
+                });
+            } else {
+                alert("Paylaşma özelliği tarayıcınız tarafından desteklenmiyor.");
+            }
+        }
+    </script>
+</body>
+</html>

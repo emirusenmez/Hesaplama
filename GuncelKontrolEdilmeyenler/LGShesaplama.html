@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LGS Sonuç Hesaplama</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #FCFCFC;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .calculator-input {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calculator-input label {
+            flex: 1;
+            font-weight: bold;
+        }
+
+        input.score {
+            flex: 1;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-left: 10px;
+            max-width: 80px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .buttons button {
+            background-color: #1DA1F2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .buttons button:hover {
+            background-color: #1A91DA;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #3C4852;
+            border-radius: 8px;
+            display: none;
+            color: white;
+        }
+
+        .result-box h4 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            background-color: #47535C;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-row span {
+            font-weight: 600;
+        }
+
+        .result-actions {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .result-actions button {
+            background-color: #47535C;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        /* Error message styles */
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-container {
+            margin-bottom: 15px;
+        }
+
+        .checkbox-container label {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator-container">
+        <h3>LGS Sonuç Hesaplama</h3>
+        <div id="errorMessage" class="error-message"></div>
+
+        <form id="lgsForm">
+            <div class="checkbox-container">
+                <label>
+                    <input type="checkbox" id="skipDin" onchange="toggleSubject('dinSection', this)">
+                    Din Kültürü ve Ahlak Bilgisi dersini almıyorsanız bu kutucuğu işaretleyiniz
+                </label>
+            </div>
+            <div class="checkbox-container">
+                <label>
+                    <input type="checkbox" id="skipDil" onchange="toggleSubject('dilSection', this)">
+                    Yabancı Dil (İngilizce vs.) dersi almıyorsanız bu kutucuğu işaretleyiniz
+                </label>
+            </div>
+
+            <hr>
+
+            <div class="calculator-input">
+                <label for="turkceDogru">Türkçe Doğru / Yanlış (max 20):</label>
+                <input type="number" id="turkceDogru" placeholder="Doğru" class="score" max="20" min="0">
+                <input type="number" id="turkceYanlis" placeholder="Yanlış" class="score" max="20" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label for="inkDogru">T.C. İnkılap Tarihi Doğru / Yanlış (max 10):</label>
+                <input type="number" id="inkDogru" placeholder="Doğru" class="score" max="10" min="0">
+                <input type="number" id="inkYanlis" placeholder="Yanlış" class="score" max="10" min="0">
+            </div>
+
+            <div class="calculator-input" id="dinSection">
+                <label for="dinDogru">Din Kültürü Doğru / Yanlış (max 10):</label>
+                <input type="number" id="dinDogru" placeholder="Doğru" class="score" max="10" min="0">
+                <input type="number" id="dinYanlis" placeholder="Yanlış" class="score" max="10" min="0">
+            </div>
+
+            <div class="calculator-input" id="dilSection">
+                <label for="dilDogru">Yabancı Dil Doğru / Yanlış (max 10):</label>
+                <input type="number" id="dilDogru" placeholder="Doğru" class="score" max="10" min="0">
+                <input type="number" id="dilYanlis" placeholder="Yanlış" class="score" max="10" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label for="matematikDogru">Matematik Doğru / Yanlış (max 20):</label>
+                <input type="number" id="matematikDogru" placeholder="Doğru" class="score" max="20" min="0">
+                <input type="number" id="matematikYanlis" placeholder="Yanlış" class="score" max="20" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label for="fenDogru">Fen Bilimleri Doğru / Yanlış (max 20):</label>
+                <input type="number" id="fenDogru" placeholder="Doğru" class="score" max="20" min="0">
+                <input type="number" id="fenYanlis" placeholder="Yanlış" class="score" max="20" min="0">
+            </div>
+
+            <div class="buttons">
+                <button type="button" onclick="hesapla()">Hesapla</button>
+                <button type="button" onclick="sifirla()">Sıfırla</button>
+            </div>
+        </form>
+
+        <div id="resultBox" class="result-box">
+            <h4>Hesaplama Sonucu</h4>
+            <div class="result-row">
+                <span>Türkçe:</span>
+                <span id="turkceNet"></span>
+            </div>
+            <div class="result-row">
+                <span>T.C. İnkılap Tarihi ve Atatürkçülük:</span>
+                <span id="inkNet"></span>
+            </div>
+            <div class="result-row" id="dinResult">
+                <span>Din Kültürü ve Ahlak Bilgisi:</span>
+                <span id="dinNet"></span>
+            </div>
+            <div class="result-row" id="dilResult">
+                <span>Yabancı Dil:</span>
+                <span id="dilNet"></span>
+            </div>
+            <div class="result-row">
+                <span>Matematik:</span>
+                <span id="matematikNet"></span>
+            </div>
+            <div class="result-row">
+                <span>Fen Bilimleri:</span>
+                <span id="fenNet"></span>
+            </div>
+            <div class="result-row">
+                <span>Toplam Net:</span>
+                <span id="toplamNet"></span>
+            </div>
+            <div class="result-row">
+                <span>LGS Puanı (MSP):</span>
+                <span id="lgsPuani"></span>
+            </div>
+
+            <div class="result-actions">
+                <button onclick="copyResults()">Kopyala</button>
+                <button onclick="shareResults()">Paylaş</button>
+                <button onclick="printResults()">Yazdır</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSubject(sectionId, checkbox) {
+            const section = document.getElementById(sectionId);
+            const resultRow = document.getElementById(sectionId + 'Result');
+            section.classList.toggle('hidden', checkbox.checked);
+            resultRow.classList.toggle('hidden', checkbox.checked);
+        }
+
+        function hesapla() {
+            const turkceMax = 20, digerMax = 10;
+            const errorMessage = document.getElementById('errorMessage');
+
+            const turkceDogru = parseFloat(document.getElementById('turkceDogru').value) || 0;
+            const turkceYanlis = parseFloat(document.getElementById('turkceYanlis').value) || 0;
+
+            const inkDogru = parseFloat(document.getElementById('inkDogru').value) || 0;
+            const inkYanlis = parseFloat(document.getElementById('inkYanlis').value) || 0;
+            const dinDogru = parseFloat(document.getElementById('dinDogru').value) || 0;
+            const dinYanlis = parseFloat(document.getElementById('dinYanlis').value) || 0;
+            const dilDogru = parseFloat(document.getElementById('dilDogru').value) || 0;
+            const dilYanlis = parseFloat(document.getElementById('dilYanlis').value) || 0;
+            const matematikDogru = parseFloat(document.getElementById('matematikDogru').value) || 0;
+            const matematikYanlis = parseFloat(document.getElementById('matematikYanlis').value) || 0;
+            const fenDogru = parseFloat(document.getElementById('fenDogru').value) || 0;
+            const fenYanlis = parseFloat(document.getElementById('fenYanlis').value) || 0;
+
+            if (turkceDogru + turkceYanlis > turkceMax) {
+                errorMessage.textContent = "Türkçe için en fazla 20 doğru ve yanlış toplamı girebilirsiniz!";
+                return;
+            } else if (inkDogru + inkYanlis > digerMax || dinDogru + dinYanlis > digerMax || dilDogru + dilYanlis > digerMax) {
+                errorMessage.textContent = "T.C. İnkılap Tarihi, Din Kültürü ve Yabancı Dil için en fazla 10 doğru ve yanlış toplamı girebilirsiniz!";
+                return;
+            } else if (matematikDogru + matematikYanlis > turkceMax || fenDogru + fenYanlis > turkceMax) {
+                errorMessage.textContent = "Matematik ve Fen Bilimleri için en fazla 20 doğru ve yanlış toplamı girebilirsiniz!";
+                return;
+            }
+                errorMessage.textContent = ""; 
+            const skipDin = document.getElementById('skipDin').checked;
+            const skipDil = document.getElementById('skipDil').checked;
+
+            const turkceKatsayi = 4.1;
+            const matematikKatsayi = 4.6;
+            const fenKatsayi = 3.75;
+            const inkilapKatsayi = 1.75;
+            let dinKatsayi = 1.8;
+            let yabanciKatsayi = 1.55;
+
+            const dinMuafKatsayi = 1.03734439834;
+            const dilMuafKatsayi = 1.03199174407;
+            const herIkiMuafKatsayi = 1.0718113612;
+
+            if (skipDin) dinKatsayi = 0;
+
+            if (skipDil) yabanciKatsayi = 0;
+
+            const turkceNet = (turkceDogru - turkceYanlis / 3).toFixed(2);
+            const inkNet = (inkDogru - inkYanlis / 3).toFixed(2);
+            const dinNet = skipDin ? 0 : (dinDogru - dinYanlis / 3).toFixed(2);
+            const dilNet = skipDil ? 0 : (dilDogru - dilYanlis / 3).toFixed(2);
+            const matematikNet = (matematikDogru - matematikYanlis / 3).toFixed(2);
+            const fenNet = (fenDogru - fenYanlis / 3).toFixed(2);
+            const toplamNet = (parseFloat(turkceNet) + parseFloat(inkNet) + parseFloat(dinNet) + parseFloat(dilNet) + parseFloat(matematikNet) + parseFloat(fenNet)).toFixed(2);
+
+            let lgsPuani = (
+                200 + (turkceNet * turkceKatsayi) + 
+                (matematikNet * matematikKatsayi) + 
+                (fenNet * fenKatsayi) + 
+                (inkNet * inkilapKatsayi) + 
+                (dinNet * dinKatsayi) + 
+                (dilNet * yabanciKatsayi)
+            ).toFixed(4);
+
+            if (skipDin && skipDil) {
+                lgsPuani = (lgsPuani * herIkiMuafKatsayi).toFixed(4);
+            } else if (skipDin) {
+                lgsPuani = (lgsPuani * dinMuafKatsayi).toFixed(4);
+            } else if (skipDil) {
+                lgsPuani = (lgsPuani * dilMuafKatsayi).toFixed(4);
+            }
+
+            let toplamSoru = 90;
+            if (skipDin) toplamSoru -= 10;
+            if (skipDil) toplamSoru -= 10;
+            const yuzde = ((toplamNet / toplamSoru) * 100).toFixed(1);
+
+            document.getElementById('turkceNet').innerText = turkceNet + " net";
+            document.getElementById('inkNet').innerText = inkNet + " net";
+            document.getElementById('dinNet').innerText = dinNet + " net";
+            document.getElementById('dilNet').innerText = dilNet + " net";
+            document.getElementById('matematikNet').innerText = matematikNet + " net";
+            document.getElementById('fenNet').innerText = fenNet + " net";
+            document.getElementById('toplamNet').innerText = toplamNet + " net / " + toplamSoru + " soru (%" + yuzde + ")";
+            document.getElementById('lgsPuani').innerText = lgsPuani + " (500 puan üzerinden)";
+
+            document.getElementById('resultBox').style.display = 'block';
+        }
+
+        function sifirla() {
+            document.getElementById('lgsForm').reset();
+            document.getElementById('resultBox').style.display = 'none';
+            document.getElementById('errorMessage').textContent = "";
+        }
+
+        function copyResults() {
+            const textToCopy = document.getElementById('resultBox').innerText;
+            navigator.clipboard.writeText(textToCopy)
+                .then(() => alert('Sonuçlar kopyalandı!'))
+                .catch(() => alert('Kopyalama başarısız oldu!'));
+        }
+
+        function shareResults() {
+            const textToShare = document.getElementById('resultBox').innerText;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'LGS Sonuçları',
+                    text: textToShare
+                }).then(() => alert('Sonuçlar paylaşıldı!'))
+                  .catch(() => alert('Paylaşım başarısız oldu!'));
+            } else {
+                alert('Bu tarayıcı paylaşma özelliğini desteklemiyor.');
+            }
+        }
+
+        function printResults() {
+            window.print();
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TYT ve AYT Sözel Puan Hesaplama</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #FCFCFC;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .calculator-input {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calculator-input label {
+            flex: 1;
+            font-weight: bold;
+        }
+
+        input.score {
+            flex: 1;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-left: 10px;
+            max-width: 80px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .buttons button {
+            background-color: #1DA1F2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .buttons button:hover {
+            background-color: #1A91DA;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #3C4852;
+            border-radius: 8px;
+            display: none;
+            color: white;
+        }
+
+        .result-box h4 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            background-color: #47535C;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-row span {
+            font-weight: 600;
+        }
+
+        .result-actions {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .result-actions button {
+            background-color: #47535C;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        a{
+            text-decoration:none;
+            color: black;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* Error message styles */
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator-container">
+        <h3>TYT ve AYT Sözel Puan Hesaplama</h3>
+        <div id="errorMessage" class="error-message"></div>
+
+        <form id="tytAytSozForm">
+            <h4>TYT Testleri</h4>
+            <div class="calculator-input">
+                <label for="tytTurkceDogruSoz">Türkçe Doğru / Yanlış (max 40):</label>
+                <input type="number" id="tytTurkceDogruSoz" placeholder="Doğru" class="score" max="40" min="0">
+                <input type="number" id="tytTurkceYanlisSoz" placeholder="Yanlış" class="score" max="40" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label for="tytSosyalDogruSoz">Sosyal Bilimler Doğru / Yanlış (max 20):</label>
+                <input type="number" id="tytSosyalDogruSoz" placeholder="Doğru" class="score" max="20" min="0">
+                <input type="number" id="tytSosyalYanlisSoz" placeholder="Yanlış" class="score" max="20" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label for="tytMatematikDogruSoz">Temel Matematik Doğru / Yanlış (max 40):</label>
+                <input type="number" id="tytMatematikDogruSoz" placeholder="Doğru" class="score" max="40" min="0">
+                <input type="number" id="tytMatematikYanlisSoz" placeholder="Yanlış" class="score" max="40" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label for="tytFenDogruSoz">Fen Bilimleri Doğru / Yanlış (max 20):</label>
+                <input type="number" id="tytFenDogruSoz" placeholder="Doğru" class="score" max="20" min="0">
+                <input type="number" id="tytFenYanlisSoz" placeholder="Yanlış" class="score" max="20" min="0">
+            </div>
+
+            <h4>AYT Testleri (Sözel)</h4>
+
+            <div class="calculator-input">
+                <label for="aytEdebDogruSoz">Edebiyat Doğru / Yanlış (max 24):</label>
+                <input type="number" id="aytEdebDogruSoz" placeholder="Doğru" class="score" max="24" min="0">
+                <input type="number" id="aytEdebYanlisSoz" placeholder="Yanlış" class="score" max="24" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label for="aytTarih1DogruSoz">Tarih-1 Doğru / Yanlış (max 10):</label>
+                <input type="number" id="aytTarih1DogruSoz" placeholder="Doğru" class="score" max="10" min="0">
+                <input type="number" id="aytTarih1YanlisSoz" placeholder="Yanlış" class="score" max="10" min="0">
+            </div>
+            <div class="calculator-input">
+                <label for="aytCografya1DogruSoz">Coğrafya-1 Doğru / Yanlış (max 6):</label>
+                <input type="number" id="aytCografya1DogruSoz" placeholder="Doğru" class="score" max="6" min="0">
+                <input type="number" id="aytCografya1YanlisSoz" placeholder="Yanlış" class="score" max="6" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label for="aytTarih2DogruSoz">Tarih-2 Doğru / Yanlış (max 11):</label>
+                <input type="number" id="aytTarih2DogruSoz" placeholder="Doğru" class="score" max="11" min="0">
+                <input type="number" id="aytTarih2YanlisSoz" placeholder="Yanlış" class="score" max="11" min="0">
+            </div>
+
+
+            <div class="calculator-input">
+                <label for="aytCografya2DogruSoz">Coğrafya-2 Doğru / Yanlış (max 11):</label>
+                <input type="number" id="aytCografya2DogruSoz" placeholder="Doğru" class="score" max="11" min="0">
+                <input type="number" id="aytCografya2YanlisSoz" placeholder="Yanlış" class="score" max="11" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label for="aytDinDogruSoz">Din Kültürü ve Ahlak Bilgisi Doğru / Yanlış (max 6):</label>
+                <input type="number" id="aytDinDogruSoz" placeholder="Doğru" class="score" max="6" min="0">
+                <input type="number" id="aytDinYanlisSoz" placeholder="Yanlış" class="score" max="6" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label for="aytFelsefeDogruSoz">Felsefe Grubu Doğru / Yanlış (max 12):</label>
+                <input type="number" id="aytFelsefeDogruSoz" placeholder="Doğru" class="score" max="12" min="0">
+                <input type="number" id="aytFelsefeYanlisSoz" placeholder="Yanlış" class="score" max="12" min="0">
+            </div>
+
+            <a href="">OBP puanınızı buradan hesaplayabilirsiniz.</a><br><br>
+
+            <div class="calculator-input">
+                <label for="obpSoz">OBP (50-100 Arası):</label>
+                <input type="number" id="obpSoz" placeholder="OBP" class="score" max="100" min="50">
+            </div>
+
+            <div class="buttons">
+                <button type="button" onclick="hesaplaSoz()">Hesapla</button>
+                <button type="button" onclick="sifirlaSoz()">Sıfırla</button>
+            </div>
+        </form>
+
+        <div id="resultBoxSoz" class="result-box">
+            <h4>Hesaplama Sonucu</h4>
+            <div class="result-row">
+                <span>TYT Puanı:</span>
+                <span id="tytPuanSoz"></span>
+            </div>
+            <div class="result-row">
+                <span>AYT Sözel Puanı:</span>
+                <span id="aytPuanSoz"></span>
+            </div>
+            <div class="result-row">
+                <span>OBP Etkili Sözel Puanı:</span>
+                <span id="obpPuanSoz"></span>
+            </div>
+            <div class="result-actions">
+                <button onclick="copyResultsSoz()">Kopyala</button>
+                <button onclick="shareResultsSoz()">Paylaş</button>
+                <button onclick="printResultsSoz()">Yazdır</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function hesaplaSoz() {
+            const errorMessage = document.getElementById('errorMessage');
+
+            const maxValues = {
+                tytTurkceSoz: 40,
+                tytSosyalSoz: 20,
+                tytMatematikSoz: 40,
+                tytFenSoz: 20,
+                aytEdebSoz: 24,
+                aytTarih1Soz: 10,
+                aytTarih2Soz: 11,
+                aytCografya1Soz: 6,
+                aytCografya2Soz: 11,
+                aytDinSoz: 6,
+                aytFelsefeSoz: 12
+            };
+
+            const tytTurkceDogruSoz = parseFloat(document.getElementById('tytTurkceDogruSoz').value) || 0;
+            const tytTurkceYanlisSoz = parseFloat(document.getElementById('tytTurkceYanlisSoz').value) || 0;
+            const tytSosyalDogruSoz = parseFloat(document.getElementById('tytSosyalDogruSoz').value) || 0;
+            const tytSosyalYanlisSoz = parseFloat(document.getElementById('tytSosyalYanlisSoz').value) || 0;
+            const tytMatematikDogruSoz = parseFloat(document.getElementById('tytMatematikDogruSoz').value) || 0;
+            const tytMatematikYanlisSoz = parseFloat(document.getElementById('tytMatematikYanlisSoz').value) || 0;
+            const tytFenDogruSoz = parseFloat(document.getElementById('tytFenDogruSoz').value) || 0;
+            const tytFenYanlisSoz = parseFloat(document.getElementById('tytFenYanlisSoz').value) || 0;
+
+            const aytEdebDogruSoz = parseFloat(document.getElementById('aytEdebDogruSoz').value) || 0;
+            const aytEdebYanlisSoz = parseFloat(document.getElementById('aytEdebYanlisSoz').value) || 0;
+            const aytTarih1DogruSoz = parseFloat(document.getElementById('aytTarih1DogruSoz').value) || 0;
+            const aytTarih1YanlisSoz = parseFloat(document.getElementById('aytTarih1YanlisSoz').value) || 0;
+            const aytTarih2DogruSoz = parseFloat(document.getElementById('aytTarih2DogruSoz').value) || 0;
+            const aytTarih2YanlisSoz = parseFloat(document.getElementById('aytTarih2YanlisSoz').value) || 0;
+            const aytCografya1DogruSoz = parseFloat(document.getElementById('aytCografya1DogruSoz').value) || 0;
+            const aytCografya1YanlisSoz = parseFloat(document.getElementById('aytCografya1YanlisSoz').value) || 0;
+            const aytCografya2DogruSoz = parseFloat(document.getElementById('aytCografya2DogruSoz').value) || 0;
+            const aytCografya2YanlisSoz = parseFloat(document.getElementById('aytCografya2YanlisSoz').value) || 0;
+            const aytDinDogruSoz = parseFloat(document.getElementById('aytDinDogruSoz').value) || 0;
+            const aytDinYanlisSoz = parseFloat(document.getElementById('aytDinYanlisSoz').value) || 0;
+            const aytFelsefeDogruSoz = parseFloat(document.getElementById('aytFelsefeDogruSoz').value) || 0;
+            const aytFelsefeYanlisSoz = parseFloat(document.getElementById('aytFelsefeYanlisSoz').value) || 0;
+
+            const obpSoz = parseFloat(document.getElementById('obpSoz').value) || 0;
+
+            if (tytTurkceDogruSoz + tytTurkceYanlisSoz > maxValues.tytTurkceSoz) {
+                errorMessage.textContent = "Türkçe için en fazla 40 soru girebilirsiniz!";
+                return;
+            }
+            if (tytSosyalDogruSoz + tytSosyalYanlisSoz > maxValues.tytSosyalSoz) {
+                errorMessage.textContent = "Sosyal Bilimler için en fazla 20 soru girebilirsiniz!";
+                return;
+            }
+            if (tytMatematikDogruSoz + tytMatematikYanlisSoz > maxValues.tytMatematikSoz) {
+                errorMessage.textContent = "Temel Matematik için en fazla 40 soru girebilirsiniz!";
+                return;
+            }
+            if (tytFenDogruSoz + tytFenYanlisSoz > maxValues.tytFenSoz) {
+                errorMessage.textContent = "Fen Bilimleri için en fazla 20 soru girebilirsiniz!";
+                return;
+            }
+            if (aytEdebDogruSoz + aytEdebYanlisSoz > maxValues.aytEdebSoz) {
+                errorMessage.textContent = "Edebiyat için en fazla 24 soru girebilirsiniz!";
+                return;
+            }
+            if (aytTarih1DogruSoz + aytTarih1YanlisSoz > maxValues.aytTarih1Soz) {
+                errorMessage.textContent = "Tarih-1 için en fazla 10 soru girebilirsiniz!";
+                return;
+            }
+            if (aytTarih2DogruSoz + aytTarih2YanlisSoz > maxValues.aytTarih2Soz) {
+                errorMessage.textContent = "Tarih-2 için en fazla 11 soru girebilirsiniz!";
+                return;
+            }
+            if (aytCografya1DogruSoz + aytCografya1YanlisSoz > maxValues.aytCografya1Soz) {
+                errorMessage.textContent = "Coğrafya-1 için en fazla 6 soru girebilirsiniz!";
+                return;
+            }
+            if (aytCografya2DogruSoz + aytCografya2YanlisSoz > maxValues.aytCografya2Soz) {
+                errorMessage.textContent = "Coğrafya-2 için en fazla 11 soru girebilirsiniz!";
+                return;
+            }
+            if (aytDinDogruSoz + aytDinYanlisSoz > maxValues.aytDinSoz) {
+                errorMessage.textContent = "Din Kültürü ve Ahlak Bilgisi için en fazla 6 soru girebilirsiniz!";
+                return;
+            }
+            if (aytFelsefeDogruSoz + aytFelsefeYanlisSoz > maxValues.aytFelsefeSoz) {
+                errorMessage.textContent = "Felsefe Grubu için en fazla 12 soru girebilirsiniz!";
+                return;
+            }
+
+            errorMessage.textContent = ""; 
+
+            const tytTurkceNetSoz = (tytTurkceDogruSoz - tytTurkceYanlisSoz / 4).toFixed(2);
+            const tytSosyalNetSoz = (tytSosyalDogruSoz - tytSosyalYanlisSoz / 4).toFixed(2);
+            const tytMatematikNetSoz = (tytMatematikDogruSoz - tytMatematikYanlisSoz / 4).toFixed(2);
+            const tytFenNetSoz = (tytFenDogruSoz - tytFenYanlisSoz / 4).toFixed(2);
+
+            const aytEdebNetSoz = (aytEdebDogruSoz - aytEdebYanlisSoz / 4).toFixed(2);
+            const aytTarih1NetSoz = (aytTarih1DogruSoz - aytTarih1YanlisSoz / 4).toFixed(2);
+            const aytTarih2NetSoz = (aytTarih2DogruSoz - aytTarih2YanlisSoz / 4).toFixed(2);
+            const aytCografya1NetSoz = (aytCografya1DogruSoz - aytCografya1YanlisSoz / 4).toFixed(2);
+            const aytCografya2NetSoz = (aytCografya2DogruSoz - aytCografya2YanlisSoz / 4).toFixed(2);
+            const aytDinNetSoz = (aytDinDogruSoz - aytDinYanlisSoz / 4).toFixed(2);
+            const aytFelsefeNetSoz = (aytFelsefeDogruSoz - aytFelsefeYanlisSoz / 4).toFixed(2);
+
+            const tytPuanSoz = 100 + (tytTurkceNetSoz * 3.3) + (tytSosyalNetSoz * 3.4) + (tytMatematikNetSoz * 3.3) + (tytFenNetSoz * 3.4);
+
+            const aytPuanSoz = tytPuanSoz * 0.4 + (aytEdebNetSoz * 6.05) + (aytTarih1NetSoz * 2.84) + (aytTarih2NetSoz * 2.8) + (aytCografya1NetSoz * 2.8) + (aytCografya2NetSoz * 2.8) + (aytDinNetSoz * 1.8) + (aytFelsefeNetSoz * 3.1);
+
+            const obpPuanSoz = (aytPuanSoz + (obpSoz * 0.6)).toFixed(2);
+
+            document.getElementById('tytPuanSoz').innerText = tytPuanSoz.toFixed(2) + " puan";
+            document.getElementById('aytPuanSoz').innerText = aytPuanSoz.toFixed(2) + " puan";
+            document.getElementById('obpPuanSoz').innerText = obpPuanSoz + " puan";
+
+            document.getElementById('resultBoxSoz').style.display = 'block';
+        }
+
+        function sifirlaSoz() {
+            document.getElementById('tytAytSozForm').reset();
+            document.getElementById('resultBoxSoz').style.display = 'none';
+        }
+
+        function copyResultsSoz() {
+            const textToCopy = document.getElementById('resultBoxSoz').innerText;
+            navigator.clipboard.writeText(textToCopy)
+                .then(() => alert('Sonuçlar kopyalandı!'))
+                .catch(() => alert('Kopyalama başarısız oldu!'));
+        }
+
+        function shareResultsSoz() {
+            const textToShare = document.getElementById('resultBoxSoz').innerText;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'TYT ve AYT Sözel Sonuçları',
+                    text: textToShare
+                }).then(() => alert('Sonuçlar paylaşıldı!'))
+                  .catch(() => alert('Paylaşım başarısız oldu!'));
+            } else {
+                alert('Bu tarayıcı paylaşma özelliğini desteklemiyor.');
+            }
+        }
+
+        function printResultsSoz() {
+            window.print();
+        }
+    </script>
+
+</body>
+</html>

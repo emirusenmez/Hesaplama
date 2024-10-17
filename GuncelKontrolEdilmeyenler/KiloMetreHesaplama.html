@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yakıt Tüketim Hesaplama Aracı</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #FCFCFC;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h3 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .calculator-input {
+            margin-bottom: 15px;
+        }
+
+        .calculator-input label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .calculator-input input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        select {
+            width: calc(100%);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .buttons button {
+            flex: 1;
+            background-color: #1DA1F2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .buttons button:hover {
+            background-color: #1A91DA;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #47535C;
+            color: white;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .result-box h4 {
+            margin-bottom: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .buttons {
+                flex-direction: column;
+            }
+
+            .buttons button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h3>Yakıt Tüketim Hesaplama Aracı</h3>
+        <form id="fuelForm">
+            <div class="calculator-input">
+                <label for="operationType">İşlem:</label>
+                <select id="operationType" onchange="showFields()">
+                    <option value="averageConsumption">Ortalama Yakıt Tüketimi Bul</option>
+                    <option value="distanceWithFuel">Gidilebilecek Mesafeyi Öğren</option>
+                    <option value="fuelCostForDistance">Ödenecek Tutarı Hesapla</option>
+                </select>
+            </div>
+
+            <div id="averageConsumptionFields" class="calculator-input hidden">
+                <label>Ödenen Tutar (TL):</label><br>
+                <input type="number" id="paidAmount1" placeholder="Örn. 500" required>
+                <br><br>
+                <label>Gidilen Mesafe (KM):</label><br>
+                <input type="number" id="distance1" placeholder="Örn. 100" required>
+            </div>
+
+            <div id="distanceWithFuelFields" class="calculator-input hidden">
+                <label>Ödenen Tutar (TL):</label><br>
+                <input type="number" id="paidAmount2" placeholder="Örn. 500" required>
+                <br><br>
+                <label>KM Başına Tüketim (Litre):</label><br>
+                <input type="number" id="fuelPerKm" placeholder="Örn. 0.1" required>
+            </div>
+
+            <div id="fuelCostForDistanceFields" class="calculator-input hidden">
+                <label>Gidilecek Mesafe (KM):</label><br>
+                <input type="number" id="distance2" placeholder="Örn. 100" required>
+                <br><br>
+                <label>KM Başına Tüketim (Litre):</label><br>
+                <input type="number" id="fuelPerKm2" placeholder="Örn. 0.1" required>
+            </div>
+
+            <div class="buttons">
+                <button type="button" onclick="calculate()">Hesapla</button>
+                <button type="button" onclick="resetForm()">Sıfırla</button>
+            </div>
+        </form>
+
+        <div id="resultBox" class="result-box">
+            <h4>Hesaplama Sonucu</h4>
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        function showFields() {
+            const operationType = document.getElementById('operationType').value;
+
+            document.getElementById('averageConsumptionFields').classList.toggle('hidden', operationType !== 'averageConsumption');
+            document.getElementById('distanceWithFuelFields').classList.toggle('hidden', operationType !== 'distanceWithFuel');
+            document.getElementById('fuelCostForDistanceFields').classList.toggle('hidden', operationType !== 'fuelCostForDistance');
+        }
+
+        function calculate() {
+            const operationType = document.getElementById('operationType').value;
+            let resultText = '';
+
+            if (operationType === 'averageConsumption') {
+                const paidAmount = parseFloat(document.getElementById('paidAmount1').value);
+                const distance = parseFloat(document.getElementById('distance1').value);
+                const averageConsumption = (paidAmount / distance).toFixed(2);
+                resultText = `Ortalama Yakıt Tüketimi: ${averageConsumption} TL/KM`;
+
+            } else if (operationType === 'distanceWithFuel') {
+                const paidAmount = parseFloat(document.getElementById('paidAmount2').value);
+                const fuelPerKm = parseFloat(document.getElementById('fuelPerKm').value);
+                const distance = (paidAmount / fuelPerKm).toFixed(2);
+                resultText = `Gidilebilecek Mesafe: ${distance} KM`;
+
+            } else if (operationType === 'fuelCostForDistance') {
+                const distance = parseFloat(document.getElementById('distance2').value);
+                const fuelPerKm = parseFloat(document.getElementById('fuelPerKm2').value);
+                const totalCost = (distance * fuelPerKm).toFixed(2);
+                resultText = `Ödenecek Tutar: ${totalCost} TL`;
+            }
+
+            document.getElementById('result').innerText = resultText;
+            document.getElementById('resultBox').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('fuelForm').reset();
+            document.getElementById('resultBox').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
+
+
+<div class="row shuttle_info car-price-list large--table --opened">
+    <div class="col-md-12">
+        <h2 class="mb-0 mt-0">Yakıt Tüketimine Göre Kiralık Araçlar</h2>
+    </div>
+    <div class="col-md-12">
+        <table class="mt-0">
+            <thead>
+                <tr>
+                    <th>Araç Modeli</th>
+                    <th>Şehir İçi Ortalama Tüketim</th>
+                    <th>Şehir Dışı Ortalama Tüketim</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Fiat Egea Sedan</td>
+                    <td>5.2 lt/100 km</td>
+                    <td>3.5 lt/100 km</td>
+                </tr>
+                <tr>
+                    <td>Renault Clio</td>
+                    <td>6.3 lt/100 km</td>
+                    <td>4.2 lt/100 km</td>
+                </tr>
+                <tr>
+                    <td>Renault Megane Sedan</td>
+                    <td>4.7 lt/100 km</td>
+                    <td>3.8 lt/100 km</td>
+                </tr>
+                <tr>
+                    <td>Renault Taliant</td>
+                    <td>6.5 lt/100 km</td>
+                    <td>5.1 lt/100 km</td>
+                </tr>
+                <tr>
+                    <td>Toyota Corolla Hybrid</td>
+                    <td>3.6 lt/100 km</td>
+                    <td>3.9 lt/100 km</td>
+                </tr>
+                <tr>
+                    <td>Suzuki Vitara</td>
+                    <td>7.8 lt/100 km</td>
+                    <td>5.5 lt/100 km</td>
+                </tr>
+                <tr>
+                    <td>Toyota Proace</td>
+                    <td>4.3 lt/100 km</td>
+                    <td>4.1 lt/100 km</td>
+                </tr>
+                <tr>
+                    <td>Hyundai i20</td>
+                    <td>7.8 lt/100 km</td>
+                    <td>5.1 lt/100 km</td>
+                </tr>
+                <tr>
+                    <td>Mercedes-Benz Vito</td>
+                    <td>8.5 lt/100 km</td>
+                    <td>6.3 lt/100 km</td>
+                </tr>
+                <tr>
+                    <td>Volvo S90</td>
+                    <td>12.2 lt/100 km</td>
+                    <td>6.3 lt/100 km</td>
+                </tr>
+                <tr>
+                    <td>Toyota Yaris Cross</td>
+                    <td>6.9 lt/100 km</td>
+                    <td>4.7 lt/100 km</td>
+                </tr>
+                <tr>
+                    <td>Audi A4</td>
+                    <td>7.3 lt/100 km</td>
+                    <td>5.1 lt/100 km</td>
+                </tr>
+                <tr>
+                    <td>Volkswagen Passat</td>
+                    <td>8.6 lt/100 km</td>
+                    <td>5.4 lt/100 km</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="table--view--all">
+        <div class="table-more--btn" data-target="large--table">
+            <svg class="icon card__toggle-icon">
+                <use xlink:href="#icon-chevron-down"></use>
+            </svg>
+        </div>
+    </div>
+</div>

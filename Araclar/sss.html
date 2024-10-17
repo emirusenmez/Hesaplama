@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sıkça Sorulan Sorular</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .faq-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .faq-header {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .faq-question.active {
+            color: #e96a62;
+        }
+
+        .faq-question:hover {
+            color: #e96a62;
+        }
+
+        .faq-answer {
+            display: none;
+            padding-top: 10px;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .faq-question .icon {
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-question.active .icon {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="faq-container">
+        <h2 class="faq-header">Sıkça Sorulan Sorular</h2>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>İhtiyaç Kredisi Nasıl Hesaplanır?</span>
+                <span class="icon">+</span>
+            </div>
+            <div class="faq-answer">
+                <p>İhtiyaç kredisi hesaplama işlemi öncelikle almak istediğiniz kredi tutarını belirlemeniz gerekir. Bütçe dostu ihtiyaç kredisini bulmak için, çekmek istediğiniz tutar üzerinden aylık taksit miktarını dikkat ederek hesaplama yapmanız gerekiyor. Bireysel ihtiyaç kredisinde maksimum vade 36 ay olarak belirlenmiştir. Belirlediğiniz kredi tutarını en fazla 3 yıl vade ile ödeyebilirsiniz.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>İhtiyaç Kredisi Faiz Oranları Nedir?</span>
+                <span class="icon">+</span>
+            </div>
+            <div class="faq-answer">
+                <p>Faiz oranları, kredi türüne ve bankaya göre değişiklik gösterir. Genellikle kişisel kredilerde uygulanan faiz oranları, bankadan bankaya farklılık gösterir.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>Tüketici Kredisi Çekmeden Önce Dikkat Edilmesi Gerekenler</span>
+                <span class="icon">+</span>
+            </div>
+            <div class="faq-answer">
+                <p>Tüketici kredisi çekerken faiz oranları, vade süreleri ve geri ödeme koşullarına dikkat edilmelidir. Ayrıca kredi dosya masrafı ve sigorta gibi ek maliyetler göz önünde bulundurulmalıdır.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>Kimler Bireysel İhtiyaç Kredisi Çekebilir?</span>
+                <span class="icon">+</span>
+            </div>
+            <div class="faq-answer">
+                <p>Bireysel ihtiyaç kredisinden faydalanmak için genellikle 18 yaşını doldurmuş ve gelir belgesi sunabilen her birey başvuruda bulunabilir.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>En Fazla Ne Kadar İhtiyaç Kredisi Çekilebilir?</span>
+                <span class="icon">+</span>
+            </div>
+            <div class="faq-answer">
+                <p>Kişinin gelir durumuna ve bankanın değerlendirmesine bağlı olarak kredi limiti belirlenir. Genellikle gelir durumuna göre kredi tutarı belirlenir.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>İhtiyaç Kredisinde Vade Sınırı Ne Kadar?</span>
+                <span class="icon">+</span>
+            </div>
+            <div class="faq-answer">
+                <p>İhtiyaç kredisinde vade sınırı genellikle maksimum 36 ay olarak belirlenmiştir.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const faqItems = document.querySelectorAll('.faq-item');
+
+        faqItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const question = item.querySelector('.faq-question');
+                const answer = item.querySelector('.faq-answer');
+                const icon = item.querySelector('.icon');
+
+                // Toggle active class
+                question.classList.toggle('active');
+                answer.classList.toggle('active');
+
+                // Toggle icon between "+" and "-"
+                icon.textContent = icon.textContent === '+' ? '-' : '+';
+            });
+        });
+    </script>
+
+</body>
+</html>

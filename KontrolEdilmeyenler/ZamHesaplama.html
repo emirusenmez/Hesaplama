@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zam Hesaplama Aracı</title>
+<style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+ 
+        .calculator-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #FCFCFC;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+ 
+        h3.calculator-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #3C4852;
+        }
+ 
+        .calculator-input {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+ 
+        .calculator-input label {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #3C4852;
+        }
+ 
+        .calculator-input input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .calculator-input select {
+            width: calc(100% );
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+ 
+        .calculator-buttons {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+            margin-top: 20px;
+        }
+ 
+        .calculator-buttons button {
+            background-color: #1DA1F2;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;            
+            border-radius: 5px;
+        }
+ 
+        .calculator-buttons button:hover {
+            background-color: #1A91DA;
+        }
+ 
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #3C4852;
+            color: #fff; 
+            border-radius: 5px;
+        }
+ 
+        .result-box h4 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            color: #fff;
+        }
+ 
+        .result {
+            font-size: 16px;
+            background-color: #47535C;
+            padding: 10px;
+            font-weight: 600;
+            border-bottom: 1px solid #ccc;
+        }
+ 
+        .result:last-child {
+            border-bottom: none;
+        }
+ 
+        .additional-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+ 
+        .additional-buttons button {
+            background-color: #47535C;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+ 
+        .additional-buttons button:hover {
+            background-color: #3C4852;
+        }
+</style>
+</head>
+<body>
+<div class="calculator-container">
+<h3 class="calculator-title">Zam Hesaplama Aracı</h3>
+<form id="zamForm">
+<div class="calculator-input">
+<label for="operationType">İşlem:</label>
+<select id="operationType" onchange="toggleInputFields()">
+<option value="zamliFiyat">Zamlı fiyat hesaplama (Normal fiyat ve artış oranı ile)</option>
+<option value="normalFiyat">Normal fiyat hesaplama (Zamlı fiyat ve artış oranı ile)</option>
+<option value="zamOrani">Zam oranı hesaplama (Normal ve zamlı fiyat ile)</option>
+</select>
+</div>
+ 
+            <div class="calculator-input">
+<label for="priceInput">Fiyat:</label>
+<input type="number" id="priceInput" placeholder="Örn: 100" required>
+</div>
+ 
+            <div class="calculator-input" id="secondInputField">
+<label for="secondInput">İkinci Değer (Oran % veya Fiyat):</label>
+<input type="number" id="secondInput" placeholder="Örn: 10" required>
+</div>
+ 
+            <div class="calculator-buttons">
+<button type="button" onclick="hesapla()">Hesapla</button>
+<button type="button" onclick="sifirla()">Sıfırla</button>
+</div>
+</form>
+ 
+        <div id="resultBox" class="result-box" style="display: none;">
+<h4>Sonuç</h4>
+<div class="result" id="calculationResult"></div>
+ 
+            <div class="additional-buttons">
+<button onclick="copyResult()">Kopyala</button>
+<button onclick="shareResult()">Paylaş</button>
+<button onclick="printResult()">Yazdır</button>
+</div>
+</div>
+</div>   
+ 
+    <script>
+        function toggleInputFields() {
+            const operationType = document.getElementById('operationType').value;
+            const secondInputLabel = document.querySelector('label[for="secondInput"]');
+            if (operationType === 'zamOrani') {
+                secondInputLabel.textContent = 'Zamlı Fiyat:';
+            } else {
+                secondInputLabel.textContent = 'Zam Oranı (%):';
+            }
+        }
+ 
+        function hesapla() {
+            const operationType = document.getElementById('operationType').value;
+            const price = parseFloat(document.getElementById('priceInput').value);
+            const secondValue = parseFloat(document.getElementById('secondInput').value);
+            let resultText = "";
+ 
+            if (isNaN(price) || isNaN(secondValue)) {
+                alert('Lütfen geçerli bir değer giriniz!');
+                return;
+            }
+ 
+            if (operationType === 'zamliFiyat') {
+                const zamTutari = price * (secondValue / 100);
+                const zamliFiyat = price + zamTutari;
+                resultText = `
+                    Normal Fiyat: ${price.toFixed(2)} TL<br>
+<hr>
+                    Zam Tutarı: ${zamTutari.toFixed(2)} TL<br>
+<hr>
+                    Zamlı Fiyat: ${zamliFiyat.toFixed(2)} TL<br>
+<hr>
+                    Zam Oranı: %${secondValue.toFixed(2)}
+                `;
+            } else if (operationType === 'normalFiyat') {
+                const normalFiyat = price / (1 + (secondValue / 100));
+                const zamTutari = price - normalFiyat;
+                resultText = `
+                    Normal Fiyat: ${normalFiyat.toFixed(2)} TL<br>
+<hr>
+                    Zam Tutarı: ${zamTutari.toFixed(2)} TL<br>
+<hr>
+                    Zamlı Fiyat: ${price.toFixed(2)} TL<br>
+<hr>
+                    Zam Oranı: %${secondValue.toFixed(2)}
+                `;
+            } else if (operationType === 'zamOrani') {
+                if (secondValue <= price) {
+                    alert('Zamlı fiyat, normal fiyattan büyük olmalıdır. Lütfen doğru giriniz.');
+                    return;
+                }
+                const zamTutari = secondValue - price;
+                const zamOrani = ((zamTutari / price) * 100).toFixed(2);
+                resultText = `
+                    Normal Fiyat: ${price.toFixed(2)} TL<br>
+<hr>
+                    Zam Tutarı: ${zamTutari.toFixed(2)} TL<br>
+<hr>
+                    Zamlı Fiyat: ${secondValue.toFixed(2)} TL<br>
+<hr>
+                    Zam Oranı: %${zamOrani}
+                `;
+            }
+ 
+            document.getElementById('calculationResult').innerHTML = resultText;
+            document.getElementById('resultBox').style.display = 'block';
+        }
+ 
+        function sifirla() {
+            document.getElementById('zamForm').reset();
+            document.getElementById('resultBox').style.display = 'none';
+        }
+ 
+        function copyResult() {
+            const resultText = document.getElementById('calculationResult').innerText;
+            navigator.clipboard.writeText(resultText).then(() => {
+                alert("Sonuç kopyalandı!");
+            }).catch(err => {
+                alert("Sonuç kopyalanamadı: " + err);
+            });
+        }
+ 
+        function printResult() {
+            window.print();
+        }
+ 
+        function shareResult() {
+            const resultText = document.getElementById('calculationResult').innerText;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Zam Hesaplama Sonucu',
+                    text: resultText
+                }).then(() => {
+                    console.log('Sonuç paylaşıldı');
+                }).catch(err => {
+                    console.error('Paylaşma hatası: ', err);
+                });
+            } else {
+                alert("Paylaşma özelliği tarayıcınız tarafından desteklenmiyor.");
+            }
+        }
+</script>
+</body>
+</html>

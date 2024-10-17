@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burç Hesaplama Aracı</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #FCFCFC;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h3.calculator-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #3C4852;
+        }
+
+        .calculator-input {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calculator-input label {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #3C4852;
+        }
+
+        .calculator-input input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .calculator-buttons {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .calculator-buttons button {
+            background-color: #1DA1F2;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;            
+            border-radius: 5px;
+        }
+
+        .calculator-buttons button:hover {
+            background-color: #1A91DA;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #3C4852;
+            color: #fff; 
+            border-radius: 5px;
+        }
+
+        .result-box h4 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            color: #fff;
+        }
+
+        .result {
+            font-size: 16px;
+            background-color: #47535C;
+            padding: 10px;
+            font-weight: 600;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .result:last-child {
+            border-bottom: none;
+        }
+
+        .link-style {
+            color: #FFD700;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .additional-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .additional-buttons button {
+            background-color: #47535C;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        .additional-buttons button:hover {
+            background-color: #3C4852;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-container {
+                padding: 10px;
+            }
+
+            .calculator-buttons button, .additional-buttons button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+
+            .calculator-input input {
+                padding: 8px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h3 class="calculator-title">Burç Hesaplama Aracı</h3>
+        <form id="zodiacForm">
+            <div class="calculator-input">
+                <label for="birthDate">Doğum Tarihiniz:</label>
+                <input type="date" id="birthDate" required>
+            </div>
+
+            <div class="calculator-buttons">
+                <button type="button" onclick="calculateZodiac()">Hesapla</button>
+                <button type="button" onclick="resetForm()">Temizle</button>
+            </div>
+        </form>
+
+        <div id="resultBox" class="result-box" style="display: none;">
+            <h4>Sonuç</h4>
+            <div class="result" id="calculationResult"></div>
+
+            <div class="additional-buttons">
+                <button onclick="copyResult()">Kopyala</button>
+                <button onclick="shareResult()">Paylaş</button>
+                <button onclick="printResult()">Yazdır</button>
+            </div>
+        </div>
+    </div>   
+
+    <script>
+        function calculateZodiac() {
+            const birthDate = new Date(document.getElementById('birthDate').value);
+            if (isNaN(birthDate)) {
+                alert("Lütfen geçerli bir doğum tarihi giriniz.");
+                return;
+            }
+
+            const zodiacSigns = [
+                { name: "Koç", start: "03-21", end: "04-19", element: "Ateş", link: "koc" },
+                { name: "Boğa", start: "04-20", end: "05-20", element: "Toprak", link: "boga" },
+                { name: "İkizler", start: "05-21", end: "06-20", element: "Hava", link: "ikizler" },
+                { name: "Yengeç", start: "06-21", end: "07-22", element: "Su", link: "yengec" },
+                { name: "Aslan", start: "07-23", end: "08-22", element: "Ateş", link: "aslan" },
+                { name: "Başak", start: "08-23", end: "09-22", element: "Toprak", link: "basak" },
+                { name: "Terazi", start: "09-23", end: "10-22", element: "Hava", link: "terazi" },
+                { name: "Akrep", start: "10-23", end: "11-21", element: "Su", link: "akrep" },
+                { name: "Yay", start: "11-22", end: "12-21", element: "Ateş", link: "yay" },
+                { name: "Oğlak", start: "12-22", end: "01-19", element: "Toprak", link: "oglak" },
+                { name: "Kova", start: "01-20", end: "02-18", element: "Hava", link: "kova" },
+                { name: "Balık", start: "02-19", end: "03-20", element: "Su", link: "balik" }
+            ];
+
+            const today = new Date();
+            const age = today.getFullYear() - birthDate.getFullYear();
+            const monthDay = `${("0" + (birthDate.getMonth() + 1)).slice(-2)}-${("0" + birthDate.getDate()).slice(-2)}`;
+
+            let zodiac = zodiacSigns.find(z => (z.start <= monthDay && monthDay <= z.end) ||
+                (z.start > z.end && (monthDay >= z.start || monthDay <= z.end)));
+
+            if (zodiac) {
+                const resultText = `
+                    Burcunuz: ${zodiac.name} (${zodiac.start} - ${zodiac.end})
+                    <hr>
+                    Yaşınız: ${age}
+                    <hr>
+                    Elementiniz: ${zodiac.element}
+                    <hr>
+                    Burcunuzun özelliklerine <a class="link-style" href="https://www.hurriyet.com.tr/mahmure/astroloji/${zodiac.link}-burcu-ozellikleri/" target="_blank">buradan</a> ulaşabilirsiniz.
+                `;
+                document.getElementById('calculationResult').innerHTML = resultText;
+                document.getElementById('resultBox').style.display = 'block';
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('zodiacForm').reset();
+            document.getElementById('resultBox').style.display = 'none';
+        }
+
+        function copyResult() {
+            const resultText = document.getElementById('calculationResult').innerText;
+            navigator.clipboard.writeText(resultText).then(() => {
+                alert("Sonuç kopyalandı!");
+            }).catch(err => {
+                alert("Sonuç kopyalanamadı: " + err);
+            });
+        }
+
+        function printResult() {
+            window.print();
+        }
+
+        function shareResult() {
+            const resultText = document.getElementById('calculationResult').innerText;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Burç Hesaplama Sonucu',
+                    text: resultText
+                }).then(() => {
+                    console.log('Sonuç paylaşıldı');
+                }).catch(err => {
+                    console.error('Paylaşma hatası: ', err);
+                });
+            } else {
+                alert("Paylaşma özelliği tarayıcınız tarafından desteklenmiyor.");
+            }
+        }
+    </script>
+</body>
+</html>

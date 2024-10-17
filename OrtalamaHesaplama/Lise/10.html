@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10. Sınıf Takdir Teşekkür Hesaplama</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            max-width: 700px;
+            margin: auto;
+            background-color: #FCFCFC;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .calculator-input {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+
+        input.score {
+            flex: 1;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-left: 10px;
+            max-width: 80px;
+        }
+
+        select {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .buttons button {
+            background-color: #1DA1F2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .buttons button:hover {
+            background-color: #1A91DA;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #3C4852;
+            border-radius: 8px;
+            display: none;
+            color: white;
+        }
+
+        .result-box h4 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .result-actions {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .result-actions button {
+            background-color: #47535C;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        form {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator-container">
+        <h3>10. Sınıf Takdir Teşekkür Hesaplama</h3>
+
+        <label for="dersSayisi">Ders Sayısı:</label>
+        <select id="dersSayisi" onchange="createFormFields()">
+            <option value="0">Seçiniz</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+        </select>
+
+        <form id="gradeForm"></form>
+
+        <div class="buttons">
+            <button type="button" onclick="calculate()">Hesapla</button>
+            <button type="button" onclick="resetForm()">Temizle</button>
+        </div>
+
+        <div id="resultBox" class="result-box">
+            <h4>Sonuç</h4>
+            <div id="result"></div>
+            <div class="divider"></div>
+            <div class="result-actions">
+                <button onclick="copyResults()">Kopyala</button>
+                <button onclick="shareResults()">Paylaş</button>
+                <button onclick="printResults()">Yazdır</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dersAdlari = [
+            'Türkçe', 'Matematik', 'Fizik', 'Kimya', 'Biyoloji', 'Tarih', 'Coğrafya', 'İngilizce', 
+            'Din Kültürü', 'Beden Eğitimi', 'Geometri', 'Felsefe', 'Psikoloji', 'Sağlık Bilgisi',
+            'İkinci Yabancı Dil', 'Sosyoloji', 'Kur\'an-ı Kerim', 'Diğer-1', 'Diğer-2', 'Diğer-3'
+        ];
+
+        function createFormFields() {
+            const dersSayisi = document.getElementById("dersSayisi").value;
+            const formContainer = document.getElementById("gradeForm");
+            formContainer.innerHTML = '';
+
+            for (let i = 1; i <= dersSayisi; i++) {
+                let fieldHtml = `
+                <div class="calculator-input">
+                    <label for="ders${i}">Ders ${i} Adı ve Saati :</label>
+                    <select id="ders${i}">
+                        ${dersAdlari.map(ders => `<option value="${ders}">${ders}</option>`).join('')}
+                    </select>
+                    <label> / </label>
+                    <select id="dersSaat${i}">
+                        ${[...Array(15).keys()].map(val => `<option value="${val+1}">${val+1} saat</option>`).join('')}
+                    </select>
+                    <input type="number" class="score" id="dersPuan${i}" placeholder="Puan" max="100" min="0">
+                </div>`;
+                formContainer.innerHTML += fieldHtml;
+            }
+        }
+
+        function calculate() {
+            const dersSayisi = document.getElementById("dersSayisi").value;
+            let totalPuan = 0;
+            let totalSaat = 0;
+            let belgeAlabilirMi = true;
+
+            for (let i = 1; i <= dersSayisi; i++) {
+                const puan = parseFloat(document.getElementById(`dersPuan${i}`).value) || 0;
+                const saat = parseInt(document.getElementById(`dersSaat${i}`).value);
+                const dersAdi = document.getElementById(`ders${i}`).value;
+
+                if (dersAdi === 'Türkçe' && puan < 55) {
+                    belgeAlabilirMi = false;
+                }
+                if (puan < 45) {
+                    belgeAlabilirMi = false;
+                }
+
+                totalPuan += puan * saat;
+                totalSaat += saat;
+            }
+
+            const ortalama = totalPuan / totalSaat;
+            let resultText = `Genel Ortalama: ${ortalama.toFixed(2)}<br>`;
+
+            if (ortalama >= 70 && ortalama <= 84.99) {
+                resultText += 'Sonuç: Tebrikler, Teşekkür aldınız!';
+            } else if (ortalama >= 85) {
+                resultText += 'Sonuç: Tebrikler, Takdir aldınız!';
+            }
+
+            if (!belgeAlabilirMi) {
+                resultText = `Genel Ortalama: ${ortalama.toFixed(2)}<br>Maalesef herhangi bir belge almaya hak kazanamadınız. (Puan ortalamanız takdir almak için yeterli ancak takdir belgesi alabilmek için ön koşul olarak Türkçe dersinden 55,00, diğer derslerin her birinden 45,00 puandan aşağı bir puanınız olmamalıdır.)`;
+            }
+
+            document.getElementById('result').innerHTML = resultText;
+            document.getElementById('resultBox').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('gradeForm').reset();
+            document.getElementById('resultBox').style.display = 'none';
+        }
+
+        function copyResults() {
+            const textToCopy = document.getElementById('resultBox').innerText;
+
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(textToCopy)
+                    .then(() => alert('Sonuçlar kopyalandı!'))
+                    .catch(err => console.error('Kopyalama başarısız:', err));
+            }
+        }
+
+        function shareResults() {
+            const textToShare = document.getElementById('resultBox').innerText;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Sonuçlar',
+                    text: textToShare,
+                    url: window.location.href
+                }).then(() => alert('Paylaşım başarılı!'))
+                  .catch(error => console.error('Paylaşım başarısız:', error));
+            }
+        }
+
+        function printResults() {
+            window.print();
+        }
+    </script>
+
+</body>
+</html>

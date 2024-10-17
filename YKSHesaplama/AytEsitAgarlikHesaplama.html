@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eşit Ağırlık Puan Hesaplama</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #FCFCFC;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .calculator-input {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calculator-input label {
+            flex: 1;
+            font-weight: bold;
+        }
+
+        input.score {
+            flex: 1;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-left: 10px;
+            max-width: 80px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .buttons button {
+            background-color: #1DA1F2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .buttons button:hover {
+            background-color: #1A91DA;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #3C4852;
+            border-radius: 8px;
+            display: none;
+            color: white;
+        }
+
+        .result-box h4 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            background-color: #47535C;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-row span {
+            font-weight: 600;
+        }
+
+        .result-actions {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .result-actions button {
+            background-color: #47535C;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        
+        a {
+            text-decoration:none;
+            color: black;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* Error message styles */
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator-container">
+        <h3>TYT ve AYT Eşit Ağırlık Puan Hesaplama</h3>
+        <div id="errorMessageEA" class="error-message"></div>
+
+        <form id="eaFormEA">
+            <h4>TYT Testleri</h4>
+            <div class="calculator-input">
+                <label for="tytTurkceDogruEA">Türkçe Doğru / Yanlış (max 40):</label>
+                <input type="number" id="tytTurkceDogruEA" placeholder="Doğru" class="score" max="40" min="0">
+                <input type="number" id="tytTurkceYanlisEA" placeholder="Yanlış" class="score" max="40" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label for="tytSosyalDogruEA">Sosyal Bilimler Doğru / Yanlış (max 20):</label>
+                <input type="number" id="tytSosyalDogruEA" placeholder="Doğru" class="score" max="20" min="0">
+                <input type="number" id="tytSosyalYanlisEA" placeholder="Yanlış" class="score" max="20" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label for="tytMatematikDogruEA">Temel Matematik Doğru / Yanlış (max 40):</label>
+                <input type="number" id="tytMatematikDogruEA" placeholder="Doğru" class="score" max="40" min="0">
+                <input type="number" id="tytMatematikYanlisEA" placeholder="Yanlış" class="score" max="40" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label for="tytFenDogruEA">Fen Bilimleri Doğru / Yanlış (max 20):</label>
+                <input type="number" id="tytFenDogruEA" placeholder="Doğru" class="score" max="20" min="0">
+                <input type="number" id="tytFenYanlisEA" placeholder="Yanlış" class="score" max="20" min="0">
+            </div>
+
+            <h4>AYT Testleri (Eşit Ağırlık)</h4>
+
+            <div class="calculator-input">
+                <label for="aytMatematikDogruEA">AYT Matematik Doğru / Yanlış (max 40):</label>
+                <input type="number" id="aytMatematikDogruEA" placeholder="Doğru" class="score" max="40" min="0">
+                <input type="number" id="aytMatematikYanlisEA" placeholder="Yanlış" class="score" max="40" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label for="aytEdebDogruEA">Edebiyat Doğru / Yanlış (max 24):</label>
+                <input type="number" id="aytEdebDogruEA" placeholder="Doğru" class="score" max="24" min="0">
+                <input type="number" id="aytEdebYanlisEA" placeholder="Yanlış" class="score" max="24" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label for="aytTarihDogruEA">Tarih-1 Doğru / Yanlış (max 10):</label>
+                <input type="number" id="aytTarihDogruEA" placeholder="Doğru" class="score" max="10" min="0">
+                <input type="number" id="aytTarihYanlisEA" placeholder="Yanlış" class="score" max="10" min="0">
+            </div>
+
+            <div class="calculator-input">
+                <label for="aytCogDogruEA">Coğrafya-1 Doğru / Yanlış (max 6):</label>
+                <input type="number" id="aytCogDogruEA" placeholder="Doğru" class="score" max="6" min="0">
+                <input type="number" id="aytCogYanlisEA" placeholder="Yanlış" class="score" max="6" min="0">
+            </div>
+            
+            <a href="">OBP puanınızı buradan hesaplayabilirsiniz.</a><br><br>
+
+            <div class="calculator-input">
+                <label for="obpEA">OBP (50-100 arası):</label>
+                <input type="number" id="obpEA" placeholder="OBP" class="score" max="100" min="50">
+            </div>
+
+            <div class="buttons">
+                <button type="button" onclick="hesaplaEA()">Hesapla</button>
+                <button type="button" onclick="sifirlaEA()">Sıfırla</button>
+            </div>
+        </form>
+
+        <div id="resultBoxEA" class="result-box">
+            <h4>Hesaplama Sonucu</h4>
+            <div class="result-row">
+                <span>TYT Puanı:</span>
+                <span id="tytPuanEA"></span>
+            </div>
+            <div class="result-row">
+                <span>AYT Eşit Ağırlık Puanı:</span>
+                <span id="aytPuanEA"></span>
+            </div>
+            
+            <div class="result-row">
+                <span>OBP Etkili Eşit Ağırlık Puanı:</span>
+                <span id="obpPuanEA"></span>
+            </div>
+            <div class="result-actions">
+                <button onclick="copyResultsEA()">Kopyala</button>
+                <button onclick="shareResultsEA()">Paylaş</button>
+                <button onclick="printResultsEA()">Yazdır</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function hesaplaEA() {
+            const errorMessageEA = document.getElementById('errorMessageEA');
+
+            const maxValuesEA = {
+                tytTurkce: 40,
+                tytSosyal: 20,
+                tytMatematik: 40,
+                tytFen: 20,
+                aytEdeb: 24,
+                aytTarih: 10,
+                aytCog: 6,
+                aytMatematik: 40
+            };
+
+            const tytTurkceDogruEA = parseFloat(document.getElementById('tytTurkceDogruEA').value) || 0;
+            const tytTurkceYanlisEA = parseFloat(document.getElementById('tytTurkceYanlisEA').value) || 0;
+            const tytSosyalDogruEA = parseFloat(document.getElementById('tytSosyalDogruEA').value) || 0;
+            const tytSosyalYanlisEA = parseFloat(document.getElementById('tytSosyalYanlisEA').value) || 0;
+            const tytMatematikDogruEA = parseFloat(document.getElementById('tytMatematikDogruEA').value) || 0;
+            const tytMatematikYanlisEA = parseFloat(document.getElementById('tytMatematikYanlisEA').value) || 0;
+            const tytFenDogruEA = parseFloat(document.getElementById('tytFenDogruEA').value) || 0;
+            const tytFenYanlisEA = parseFloat(document.getElementById('tytFenYanlisEA').value) || 0;
+
+            const aytEdebDogruEA = parseFloat(document.getElementById('aytEdebDogruEA').value) || 0;
+            const aytEdebYanlisEA = parseFloat(document.getElementById('aytEdebYanlisEA').value) || 0;
+            const aytTarihDogruEA = parseFloat(document.getElementById('aytTarihDogruEA').value) || 0;
+            const aytTarihYanlisEA = parseFloat(document.getElementById('aytTarihYanlisEA').value) || 0;
+            const aytCogDogruEA = parseFloat(document.getElementById('aytCogDogruEA').value) || 0;
+            const aytCogYanlisEA = parseFloat(document.getElementById('aytCogYanlisEA').value) || 0;
+            const aytMatematikDogruEA = parseFloat(document.getElementById('aytMatematikDogruEA').value) || 0;
+            const aytMatematikYanlisEA = parseFloat(document.getElementById('aytMatematikYanlisEA').value) || 0;
+
+            const obpEA = parseFloat(document.getElementById('obpEA').value) || 0;
+
+            if (tytTurkceDogruEA + tytTurkceYanlisEA > maxValuesEA.tytTurkce) {
+                errorMessageEA.textContent = "Türkçe için en fazla 40 soru girebilirsiniz!";
+                return;
+            }
+            if (tytSosyalDogruEA + tytSosyalYanlisEA > maxValuesEA.tytSosyal) {
+                errorMessageEA.textContent = "Sosyal Bilimler için en fazla 20 soru girebilirsiniz!";
+                return;
+            }
+            if (tytMatematikDogruEA + tytMatematikYanlisEA > maxValuesEA.tytMatematik) {
+                errorMessageEA.textContent = "Temel Matematik için en fazla 40 soru girebilirsiniz!";
+                return;
+            }
+            if (tytFenDogruEA + tytFenYanlisEA > maxValuesEA.tytFen) {
+                errorMessageEA.textContent = "Fen Bilimleri için en fazla 20 soru girebilirsiniz!";
+                return;
+            }
+            if (aytEdebDogruEA + aytEdebYanlisEA > maxValuesEA.aytEdeb) {
+                errorMessageEA.textContent = "Edebiyat için en fazla 24 soru girebilirsiniz!";
+                return;
+            }
+            if (aytTarihDogruEA + aytTarihYanlisEA > maxValuesEA.aytTarih) {
+                errorMessageEA.textContent = "Tarih-1 için en fazla 10 soru girebilirsiniz!";
+                return;
+            }
+            if (aytCogDogruEA + aytCogYanlisEA > maxValuesEA.aytCog) {
+                errorMessageEA.textContent = "Coğrafya-1 için en fazla 6 soru girebilirsiniz!";
+                return;
+            }
+            if (aytMatematikDogruEA + aytMatematikYanlisEA > maxValuesEA.aytMatematik) {
+                errorMessageEA.textContent = "AYT Matematik için en fazla 40 soru girebilirsiniz!";
+                return;
+            }
+
+            errorMessageEA.textContent = ""; 
+            
+            const tytTurkceNetEA = (tytTurkceDogruEA - tytTurkceYanlisEA / 4).toFixed(2);
+            const tytSosyalNetEA = (tytSosyalDogruEA - tytSosyalYanlisEA / 4).toFixed(2);
+            const tytMatematikNetEA = (tytMatematikDogruEA - tytMatematikYanlisEA / 4).toFixed(2);
+            const tytFenNetEA = (tytFenDogruEA - tytFenYanlisEA / 4).toFixed(2);
+
+            const aytEdebNetEA = (aytEdebDogruEA - aytEdebYanlisEA / 4).toFixed(2);
+            const aytTarihNetEA = (aytTarihDogruEA - aytTarihYanlisEA / 4).toFixed(2);
+            const aytCogNetEA = (aytCogDogruEA - aytCogYanlisEA / 4).toFixed(2);
+            const aytMatematikNetEA = (aytMatematikDogruEA - aytMatematikYanlisEA / 4).toFixed(2);
+
+            const tytPuanEA = 100 + (tytTurkceNetEA * 3.3) + (tytSosyalNetEA * 3.4) + (tytMatematikNetEA * 3.3) + (tytFenNetEA * 3.4);
+
+            const aytPuanEA = tytPuanEA * 0.4 + (aytEdebNetEA * 5.5) + (aytTarihNetEA * 2.55) + (aytCogNetEA * 2.55) + (aytMatematikNetEA * 3.18);
+
+            const obpPuanEA = (aytPuanEA + (obpEA * 0.6)).toFixed(2);
+
+            document.getElementById('tytPuanEA').innerText = tytPuanEA.toFixed(2) + " puan";
+            document.getElementById('aytPuanEA').innerText = aytPuanEA.toFixed(2) + " puan";
+            document.getElementById('obpPuanEA').innerText = obpPuanEA + " puan";
+
+            document.getElementById('resultBoxEA').style.display = 'block';
+        }
+
+        function sifirlaEA() {
+            document.getElementById('eaFormEA').reset();
+            document.getElementById('resultBoxEA').style.display = 'none';
+        }
+
+        function copyResultsEA() {
+            const textToCopy = document.getElementById('resultBoxEA').innerText;
+            navigator.clipboard.writeText(textToCopy)
+                .then(() => alert('Sonuçlar kopyalandı!'))
+                .catch(() => alert('Kopyalama başarısız oldu!'));
+        }
+
+        function shareResultsEA() {
+            const textToShare = document.getElementById('resultBoxEA').innerText;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Eşit Ağırlık Sonuçları',
+                    text: textToShare
+                }).then(() => alert('Sonuçlar paylaşıldı!'))
+                  .catch(() => alert('Paylaşım başarısız oldu!'));
+            } else {
+                alert('Bu tarayıcı paylaşma özelliğini desteklemiyor.');
+            }
+        }
+
+        function printResultsEA() {
+            window.print();
+        }
+    </script>
+
+</body>
+</html>

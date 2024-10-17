@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBP Hesaplama Aracı</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #FCFCFC;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h3.calculator-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #3C4852;
+        }
+
+        .calculator-input {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calculator-input label {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #3C4852;
+        }
+
+        .calculator-input input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .calculator-input select {
+            width: calc(100% );
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .calculator-buttons {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .calculator-buttons button {
+            background-color: #1DA1F2;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;            
+            border-radius: 5px;
+        }
+
+        .calculator-buttons button:hover {
+            background-color: #1A91DA;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #3C4852;
+            color: #fff; 
+            border-radius: 5px;
+        }
+
+        .result-box h4 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            color: #fff;
+        }
+
+        .result {
+            font-size: 16px;
+            background-color: #47535C;
+            padding: 10px;
+            font-weight: 600;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .result:last-child {
+            border-bottom: none;
+        }
+
+        .additional-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .additional-buttons button {
+            background-color: #47535C;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        .additional-buttons button:hover {
+            background-color: #3C4852;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-container {
+                padding: 10px;
+            }
+
+            .calculator-buttons button, .additional-buttons button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+
+            .calculator-input input, .calculator-input select {
+                padding: 8px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>düzeltme olabilir</h1>
+    <div class="calculator-container">
+        <h3 class="calculator-title">OBP Hesaplama Aracı</h3>
+        <form id="obpForm">
+            <div class="calculator-input">
+                <label for="calculationType">Hesaplama Türü:</label>
+                <select id="calculationType" onchange="toggleInputs()">
+                    <option value="singleScore">Lise Mezuniyet Puanı</option>
+                    <option value="multipleScores">9-12. Sınıf Ortalamaları</option>
+                    <option value="middleSchoolScores">6-8. Sınıf Ortalamaları</option>
+                </select>
+            </div>
+
+            <div class="calculator-input" id="singleScoreInput">
+                <label for="singleScore">Lise Mezuniyet Puanı:</label>
+                <input type="number" id="singleScore" min="0" max="100" placeholder="Örn: 85" step="0.01" required>
+            </div>
+
+            <div class="calculator-input" id="multipleScoresInput" style="display: none;">
+                <label for="grade9">9. Sınıf Ortalama:</label><br>
+                <input type="number" id="grade9" min="0" max="100" placeholder="Örn: 80" step="0.01">
+                <label for="grade10">10. Sınıf Ortalama:</label><br>
+                <input type="number" id="grade10" min="0" max="100" placeholder="Örn: 85" step="0.01">
+                <label for="grade11">11. Sınıf Ortalama:</label><br>
+                <input type="number" id="grade11" min="0" max="100" placeholder="Örn: 90" step="0.01">
+                <label for="grade12">12. Sınıf Ortalama:</label><br>
+                <input type="number" id="grade12" min="0" max="100" placeholder="Örn: 92" step="0.01">
+            </div>
+
+            <div class="calculator-input" id="middleSchoolScoresInput" style="display: none;">
+                <label for="grade6">6. Sınıf Ortalama:</label><br>
+                <input type="number" id="grade6" min="0" max="100" placeholder="Örn: 75" step="0.01">
+                <label for="grade7">7. Sınıf Ortalama:</label><br>
+                <input type="number" id="grade7" min="0" max="100" placeholder="Örn: 80" step="0.01">
+                <label for="grade8">8. Sınıf Ortalama:</label><br>
+                <input type="number" id="grade8" min="0" max="100" placeholder="Örn: 85" step="0.01">
+            </div>
+
+            <div class="calculator-buttons">
+                <button type="button" onclick="calculate()">Hesapla</button>
+                <button type="button" onclick="resetForm()">Temizle</button>
+            </div>
+        </form>
+
+        <div id="resultBox" class="result-box" style="display: none;">
+            <h4>Sonuç</h4>
+            <div class="result" id="calculationResult"></div>
+
+            <div class="additional-buttons">
+                <button onclick="copyResult()">Kopyala</button>
+                <button onclick="shareResult()">Paylaş</button>
+                <button onclick="printResult()">Yazdır</button>
+            </div>
+        </div>
+    </div>   
+
+    <script>
+        function toggleInputs() {
+            const calculationType = document.getElementById('calculationType').value;
+            document.getElementById('singleScoreInput').style.display = calculationType === 'singleScore' ? 'block' : 'none';
+            document.getElementById('multipleScoresInput').style.display = calculationType === 'multipleScores' ? 'block' : 'none';
+            document.getElementById('middleSchoolScoresInput').style.display = calculationType === 'middleSchoolScores' ? 'block' : 'none';
+        }
+
+        function calculate() {
+            const calculationType = document.getElementById('calculationType').value;
+            let obp = 0;
+            
+            if (calculationType === 'singleScore') {
+                const score = parseFloat(document.getElementById('singleScore').value);
+                obp = score * 5;
+            } else if (calculationType === 'multipleScores') {
+                const scores = [
+                    parseFloat(document.getElementById('grade9').value),
+                    parseFloat(document.getElementById('grade10').value),
+                    parseFloat(document.getElementById('grade11').value),
+                    parseFloat(document.getElementById('grade12').value)
+                ];
+                const average = scores.reduce((a, b) => a + b, 0) / scores.length;
+                obp = average * 5;
+            } else if (calculationType === 'middleSchoolScores') {
+                const scores = [
+                    parseFloat(document.getElementById('grade6').value),
+                    parseFloat(document.getElementById('grade7').value),
+                    parseFloat(document.getElementById('grade8').value)
+                ];
+                const average = scores.reduce((a, b) => a + b, 0) / scores.length;
+                document.getElementById('calculationResult').innerText = `Ortalamanız: ${average.toFixed(2)}`;
+                document.getElementById('resultBox').style.display = 'block';
+                return;
+            }
+
+            const obp500 = obp.toFixed(3);
+            const obp012 = (obp * 0.12).toFixed(3);
+            const obp018 = (obp * 0.18).toFixed(3);
+
+            const resultText = `
+                500 üzerinden OBP: ${obp500}
+                <hr>
+                0,12 katsayılı OBP: ${obp012} (Eklenecek puan)
+                <hr>
+                0,18 ek katsayılı OBP: ${obp018} (Ek puanlı)
+            `;
+
+            document.getElementById('calculationResult').innerHTML = resultText;
+            document.getElementById('resultBox').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('obpForm').reset();
+            document.getElementById('resultBox').style.display = 'none';
+        }
+
+        function copyResult() {
+            const resultText = document.getElementById('calculationResult').innerText;
+            navigator.clipboard.writeText(resultText).then(() => {
+                alert("Sonuç kopyalandı!");
+            }).catch(err => {
+                alert("Sonuç kopyalanamadı: " + err);
+            });
+        }
+
+        function printResult() {
+            window.print();
+        }
+
+        function shareResult() {
+            const resultText = document.getElementById('calculationResult').innerText;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'OBP Hesaplama Sonucu',
+                    text: resultText
+                }).then(() => {
+                    console.log('Sonuç paylaşıldı');
+                }).catch(err => {
+                    console.error('Paylaşma hatası: ', err);
+                });
+            } else {
+                alert("Paylaşma özelliği tarayıcınız tarafından desteklenmiyor.");
+            }
+        }
+    </script>
+</body>
+</html>

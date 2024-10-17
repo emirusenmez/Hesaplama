@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benzer Hesaplama Araçları</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .unique-tools-container {
+            width: 100%;
+            max-width: 1060px;
+            margin: 0 auto;
+        }
+
+        .unique-tools-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .unique-tools-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .unique-tools-header a {
+            font-size: 16px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .unique-cards {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .unique-card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            width: 30%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .unique-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .unique-card span {
+            display: inline-block;
+            background-color: #f1f7ff;
+            color: #007bff;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .unique-card p {
+            color: #888;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .unique-card button {
+            width: 100%;
+            background-color: transparent;
+            color: #007bff;
+            border: 1px solid #007bff;
+            padding: 10px 0;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .unique-card button:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        
+        @media (max-width: 540px) {
+            .unique-cards {
+                display: block; 
+            }
+
+            .unique-card {
+                width: 100%; 
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="unique-tools-container">
+        <div class="unique-tools-header">
+            <h2>Benzer Hesaplama Araçları</h2>
+            <a href="#">Tüm Hesaplama Araçları</a>
+        </div>
+
+        <div class="unique-cards">
+            <div class="unique-card">
+                <h3>İhtiyaç Kredisi Hesaplama</h3>
+                <span>Kredi</span>
+                <p>Kişisel harcamalar için bankalardan alınan kısa vadeli nakit kredilerdir.</p>
+                <button>Hesapla ➔</button>
+            </div>
+
+            <div class="unique-card">
+                <h3>İş Yeri Kredisi Hesaplama</h3>
+                <span>Kredi</span>
+                <p>İş yeriniz için alabileceğiniz bankalardan sağlanan nakit kredi türüdür.</p>
+                <button>Hesapla ➔</button>
+            </div>
+
+            <div class="unique-card">
+                <h3>Konut Kredisi Hesaplama</h3>
+                <span>Kredi</span>
+                <p>Konut almak için bankalardan sağlanan uzun vadeli konut kredisidir.</p>
+                <button>Hesapla ➔</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
