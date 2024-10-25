@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kredi Hesaplama Makinesi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .calculator-container {
+            max-width: 800px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .calculator-input {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .calculator-input label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .calculator-input input {
+            width: 97%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .buttons button {
+            flex: 1;
+            background-color: #1DA1F2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .buttons button:hover {
+            background-color: #1A91DA;
+        }
+
+        table {
+            width: 100%; /* Tablo genişliği yüzde 100 olsun */
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            word-wrap: break-word; /* İçerik taşarsa kelime kırılır */
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        .summary-box {
+            text-align: left;
+            margin-top: 20px;
+            background-color: #3c4852;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="calculator-container">
+    <h3>Kredi Hesaplama Aracı</h3>
+    <form id="loanForm">
+        <div class="calculator-input">
+            <label for="loanAmount">Kredi Tutarı (TL):</label>
+            <input type="number" id="loanAmount" placeholder="Kredi tutarını giriniz" required>
+        </div>
+
+        <div class="calculator-input">
+            <label for="interestRate">Faiz Oranı (% Aylık):</label>
+            <input type="number" id="interestRate" placeholder="Aylık faiz oranını giriniz" step="0.01" required>
+        </div>
+
+        <div class="calculator-input">
+            <label for="loanTerm">Vade Sayısı (Ay):</label>
+            <input type="number" id="loanTerm" placeholder="Vade sayısını giriniz (ay)" required>
+        </div>
+
+        <div class="buttons">
+            <button type="button" onclick="calculateLoan()">Hesapla</button>
+            <button type="button" onclick="resetForm()">Sıfırla</button>
+        </div>
+    </form>
+
+    <div id="summaryBox" class="summary-box hidden">
+        <h4>Kredi Bilgileri</h4>
+        <p><strong>Kredi Tutarı:</strong> <span id="summaryLoanAmount"></span> TL</p>
+        <hr>
+        <p><strong>Faiz Oranı:</strong> <span id="summaryInterestRate"></span> %</p><hr>
+        <p><strong>Taksit Sayısı:</strong> <span id="summaryLoanTerm"></span> Ay</p><hr>
+        <p><strong>Taksit Tutarı:</strong> <span id="summaryMonthlyPayment"></span> TL</p><hr>
+        <p><strong>Geri Ödenecek Toplam Tutar:</strong> <span id="summaryTotalPayment"></span> TL</p><hr>
+        <p><strong>Aylık Maliyet Oranı:</strong> <span id="summaryMonthlyCostRate"></span> %</p><hr>
+        <p><strong>Yıllık Maliyet Oranı:</strong> <span id="summaryAnnualCostRate"></span> %</p>
+    </div>
+
+    <div id="resultBox" class="result-box hidden">
+        <h4>Ödeme Planı</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ay</th>
+                    <th>Taksit</th>
+                    <th>Anapara</th>
+                    <th>Faiz</th>
+                    <th>KKDF</th>
+                    <th>BSMV</th>
+                    <th>Kalan Anapara</th>
+                </tr>
+            </thead>
+            <tbody id="resultTable">
+                <!-- Sonuçlar burada görünecek -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function calculateLoan() {
+        const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+        const interestRate = parseFloat(document.getElementById('interestRate').value) / 100;
+        const loanTerm = parseInt(document.getElementById('loanTerm').value);
+        
+        const kkdfRate = 0.15; // KKDF %15
+        const bsmvRate = 0.15; // BSMV %15
+        let remainingBalance = loanAmount;
+        const resultTable = document.getElementById('resultTable');
+        resultTable.innerHTML = ''; // Önceki sonuçları temizle
+
+        // Aylık taksit hesaplaması (Amortisman formülü)
+        const monthlyPayment = loanAmount * (interestRate * Math.pow(1 + interestRate, loanTerm)) / (Math.pow(1 + interestRate, loanTerm) - 1);
+        const totalPayment = monthlyPayment * loanTerm;
+
+        for (let i = 1; i <= loanTerm; i++) {
+            const interestPayment = remainingBalance * interestRate;
+            const principalPayment = monthlyPayment - interestPayment;
+            const kkdf = interestPayment * kkdfRate;
+            const bsmv = interestPayment * bsmvRate;
+            remainingBalance -= principalPayment;
+
+            const row = `<tr>
+                <td>${i}</td>
+                <td>${monthlyPayment.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL</td>
+                <td>${principalPayment.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL</td>
+                <td>${interestPayment.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL</td>
+                <td>${kkdf.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL</td>
+                <td>${bsmv.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL</td>
+                <td>${remainingBalance.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} TL</td>
+            </tr>`;
+            resultTable.innerHTML += row;
+        }
+
+        // Özet bilgileri göster
+        document.getElementById('summaryLoanAmount').textContent = loanAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2 });
+        document.getElementById('summaryInterestRate').textContent = (interestRate * 100).toFixed(2);
+        document.getElementById('summaryLoanTerm').textContent = loanTerm;
+        document.getElementById('summaryMonthlyPayment').textContent = monthlyPayment.toLocaleString('tr-TR', { minimumFractionDigits: 2 });
+        document.getElementById('summaryTotalPayment').textContent = totalPayment.toLocaleString('tr-TR', { minimumFractionDigits: 2 });
+        document.getElementById('summaryMonthlyCostRate').textContent = (interestRate * 100 * 1.3).toFixed(4); // Örnek aylık maliyet oranı
+        document.getElementById('summaryAnnualCostRate').textContent = (interestRate * 12 * 1.3 * 100).toFixed(4); // Örnek yıllık maliyet oranı
+
+        document.getElementById('resultBox').classList.remove('hidden');
+        document.getElementById('summaryBox').classList.remove('hidden');
+    }
+
+    function resetForm() {
+        document.getElementById('loanForm').reset();
+        document.getElementById('resultBox').classList.add('hidden');
+        document.getElementById('summaryBox').classList.add('hidden');
+        document.getElementById('resultTable').innerHTML = '';
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ay Burcu Hesaplama Aracı</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #FCFCFC;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h3 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .calculator-input {
+            margin-bottom: 15px;
+        }
+
+        .calculator-input label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .calculator-input input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .buttons button {
+            background-color: #1DA1F2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .buttons button:hover {
+            background-color: #1A91DA;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #47535C;
+            color: white;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .result-box h4 {
+            margin-bottom: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h3>Ay Burcu Hesaplama Aracı</h3>
+        <form id="moonSignForm">
+            <div class="calculator-input">
+                <label for="birthDate">Doğum Tarihi:</label>
+                <input type="date" id="birthDate" required>
+            </div>
+
+            <div class="buttons">
+                <button type="button" onclick="calculateMoonSign()">Ay Burcunu Hesapla</button>
+                <button type="button" onclick="resetForm()">Sıfırla</button>
+            </div>
+        </form>
+
+        <div id="resultBox" class="result-box">
+            <h4>Ay Burcu Sonucu</h4>
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        const moonSigns = [
+            { start: "01-21", end: "02-19", sign: "Kova" },
+            { start: "02-20", end: "03-20", sign: "Balık" },
+            { start: "03-21", end: "04-20", sign: "Koç" },
+            { start: "04-21", end: "05-21", sign: "Boğa" },
+            { start: "05-22", end: "06-21", sign: "İkizler" },
+            { start: "06-22", end: "07-23", sign: "Yengeç" },
+            { start: "07-24", end: "08-23", sign: "Aslan" },
+            { start: "08-24", end: "09-23", sign: "Başak" },
+            { start: "09-24", end: "10-23", sign: "Terazi" },
+            { start: "10-24", end: "11-22", sign: "Akrep" },
+            { start: "11-23", end: "12-21", sign: "Yay" },
+            { start: "12-22", end: "01-20", sign: "Oğlak" },
+        ];
+
+        function calculateMoonSign() {
+            const birthDate = new Date(document.getElementById('birthDate').value);
+            const monthDay = (birthDate.getMonth() + 1).toString().padStart(2, '0') + '-' +
+                             birthDate.getDate().toString().padStart(2, '0');
+
+            let moonSign = "Bilinmiyor";
+
+            for (const sign of moonSigns) {
+                if (
+                    (monthDay >= sign.start && monthDay <= sign.end) ||
+                    (sign.start > sign.end && (monthDay >= sign.start || monthDay <= sign.end))
+                ) {
+                    moonSign = sign.sign;
+                    break;
+                }
+            }
+
+            document.getElementById('result').innerHTML = `Ay Burcunuz: <strong>${moonSign}</strong>`;
+            document.getElementById('resultBox').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('moonSignForm').reset();
+            document.getElementById('resultBox').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

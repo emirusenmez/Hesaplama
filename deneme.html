@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saat Kaç Uygulaması</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 20%;
+            background-color: #f0f8ff;
+        }
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        #clock {
+            font-size: 60px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Saat Kaç?</h1>
+<div id="clock"></div>
+
+<script>
+    function showTime() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        const timeString = `${hours}:${minutes}:${seconds}`;
+        document.getElementById('clock').textContent = timeString;
+    }
+
+    setInterval(showTime, 1000); // Her saniye saati güncelle
+    showTime(); // Sayfa yüklendiğinde hemen saati göster
+</script>
+
+</body>
+</html>
