@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KDV Hesaplama Aracı</title>
+    <title>İdeal Kilo Hesaplama Aracı</title>
     <style>
         body {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -12,9 +12,9 @@
             padding: 20px;
         }
 
-        .kdv-calculator-container {
+        .calculator-container {
             width: 100%;
-            max-width: 1060px;
+            max-width: 600px;
             margin: 0 auto;
             background-color: #FCFCFC;
             padding: 20px;
@@ -22,87 +22,68 @@
             border-radius: 10px;
         }
 
-        h3.kdv-calculator-title {
+        h3.calculator-title {
             font-size: 20px;
             margin-bottom: 20px;
             font-weight: bold;
-            color: #333;
+            color: #3C4852;
         }
 
-        .kdv-calculator-options {
+        .calculator-input {
+            margin-top: 20px;
             display: flex;
             flex-direction: column;
+        }
+
+        .calculator-input label {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #3C4852;
+        }
+
+        .radio-group {
+            display: flex;
+            justify-content: space-around;
             margin-bottom: 20px;
         }
 
-        .kdv-calculator-options label {
-            background-color: #f1f1f1;
-            padding: 10px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+        .radio-group label {
             display: flex;
             align-items: center;
-            margin-top: 5px;
-        }
-
-        input[type="radio"] {
-            display: none;
-        }
-
-        input[type="radio"]:checked + label {
-            background-color: #1DA1F2;
-            color: white;
-        }
-
-        .kdv-rate-options {
-            display: flex;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            align-items: center;
-        }
-
-        .kdv-rate-options label {
-            width: 120px;
-            text-align: center;
-            line-height: 40px;
+            justify-content: center;
             cursor: pointer;
-            background-color: #f1f1f1;
-            padding: 10px;
-            transition: background-color 0.3s ease;
-        }
-
-        .kdv-rate-options label:hover {
-            background-color: #1DA1F2;
-            color: white;
-        }
-
-        #kdvOtherInput {
-            display: none;
-            width: 80px;
-            height: 38px;
+            border-radius: 5px;
+            padding: 10px 30px;
+            transition: background-color 0.3s, border-color 0.3s;
             font-size: 16px;
-            margin-left: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
+            background-color: #1DA1F2;
+            color: white;
         }
 
-        .kdv-calculator-input {
-            margin-top: 20px;
+        .radio-group input[type="radio"] {
+            display: none;
         }
 
-        .kdv-calculator-input input {
+        .radio-group input[type="radio"]:checked + label {
+            background-color: #da541a;
+            color: white;
+        }
+
+        .calculator-input input[type="number"] {
             width: calc(100% - 20px);
             padding: 10px;
             border: 1px solid #ccc;
+            margin-bottom: 20px;
+            border-radius: 5px;
         }
 
-        .kdv-calculator-buttons {
+        .calculator-buttons {
             display: flex;
             justify-content: space-around;
             margin-top: 20px;
         }
 
-        .kdv-calculator-buttons button {
+        .calculator-buttons button {
             background-color: #1DA1F2;
             color: #fff;
             cursor: pointer;
@@ -112,308 +93,134 @@
             border-radius: 5px;
         }
 
-        .kdv-calculator-buttons button:hover {
+        .calculator-buttons button:hover {
             background-color: #1A91DA;
         }
 
-        .kdv-result-box {
+        .result-box {
             margin-top: 20px;
             padding: 20px;
             background-color: #3C4852;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            display: none;
-            margin: 20px;
-            border-radius: 5px;
+            color: #fff; 
+            border-radius: 10px;
         }
 
-        .kdv-result-box h4 {
+        .result-box h4 {
             margin-bottom: 20px;
             font-size: 18px;
-            font-weight: bold;
-            color: white;
-        }
-        .kdv-result-actions {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-        }
-
-        .kdv-result-actions button {
-            cursor: pointer;            
-            background-color: #47535C;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
             color: #fff;
-            cursor: pointer;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;            
-            border-radius: 5px;
         }
 
-        .kdv-result-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #ddd;
-            background-color: #47535C;  
-            color: #fff;   
+        .result {
+            font-size: 16px;
+            background-color: #47535C;
+            padding: 10px;
+            font-weight: 600;
+            border-bottom: 1px solid #ccc;
         }
 
-        .kdv-result-row:last-child {
+        .result:last-child {
             border-bottom: none;
         }
 
-        .kdv-result-row span {
-            font-weight: 600;
-            
-        }
-        .kdv-calculator-options label {
-        background-color: #f1f1f1;
-        padding: 10px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        display: flex;
-        align-items: center;
-        margin-top: 5px;
-        border-radius: 5px;
-        position: relative; /* Yuvarlak butonu kolayca yerleştirmek için */
-    }
-
-    .kdv-calculator-options input[type="radio"] {
-        display: none; /* Varsayılan radyo butonlarını gizle */
-    }
-
-    .kdv-calculator-options label::before {
-        content: "";
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%; /* Yuvarlak buton görünümü */
-        border: 2px solid #1DA1F2;
-        margin-right: 10px;
-        background-color: #fff;
-        box-sizing: border-box;
-    }
-
-    .kdv-calculator-options input[type="radio"]:checked + label::before {
-        background-color: #1DA1F2; /* Seçili olduğunda butonun rengi */
-        border-color: #1DA1F2;
-    }
-
-        /* Responsive design adjustments */
-        @media (max-width: 1060px) {
-            .kdv-calculator-container {
+        @media (max-width: 768px) {
+            .calculator-container {
                 padding: 10px;
             }
 
-            .kdv-rate-options label {
-                margin-bottom: 5px;
+            .calculator-buttons button {
+                font-size: 14px;
+                padding: 8px 16px;
             }
 
-            button {
-                width: 100%;
-                margin-bottom: 10px;
+            .calculator-input input[type="number"] {
+                padding: 8px;
+                font-size: 14px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="kdv-calculator-container">
-        <h3 class="kdv-calculator-title">KDV Hesaplama Aracı</h3>
-        <form id="kdvForm">
-            <label>KDV Türünü Seçiniz</label>
-            <br><br>
-            <div class="kdv-calculator-options">
-                <input type="radio" name="islem" value="dahil" id="dahil" required>
-                <label for="dahil">KDV dahil tutardan KDV hariç fiyat hesaplama</label>
-
-                <input type="radio" name="islem" value="haric" id="haric">
-                <label for="haric">KDV hariç fiyattan KDV dahil tutar hesaplama</label>
-
-                <input type="radio" name="islem" value="matrah" id="matrah">
-                <label for="matrah">KDV'den matrah bulma</label>
+    <div class="calculator-container">
+        <h3 class="calculator-title">İdeal Kilo Hesaplama Aracı</h3>
+        <form id="idealWeightForm">
+            <div class="calculator-input">
+                <div class="radio-group">
+                    <input type="radio" id="male" name="gender" value="male" required>
+                    <label for="male">Erkek</label>
+                    <input type="radio" id="female" name="gender" value="female">
+                    <label for="female">Kadın</label>
+                </div>
             </div>
 
-            <label>KDV Oranını Seçiniz</label>
-            <br><br>
-            <div class="kdv-rate-options">
-                <input type="radio" id="kdv1" name="kdvOrani" value="1" required onchange="checkOtherKdv()">
-                <label for="kdv1">1%</label>
-
-                <input type="radio" id="kdv8" name="kdvOrani" value="8" onchange="checkOtherKdv()">
-                <label for="kdv8">8%</label>
-
-                <input type="radio" id="kdv10" name="kdvOrani" value="10" onchange="checkOtherKdv()">
-                <label for="kdv10">10%</label>
-
-                <input type="radio" id="kdv18" name="kdvOrani" value="18" onchange="checkOtherKdv()">
-                <label for="kdv18">18%</label>
-
-                <input type="radio" id="kdv20" name="kdvOrani" value="20" onchange="checkOtherKdv()">
-                <label for="kdv20">20%</label>
-
-                <input type="radio" id="kdvOther" name="kdvOrani" value="other" onchange="checkOtherKdv()">
-                <label for="kdvOther">Diğer</label>
-                <input type="number" id="kdvOtherInput" placeholder="%" step="0.01" min="0">
+            <div class="calculator-input">
+                <label for="height">Boy (cm):</label>
+                <input type="number" id="height" min="100" placeholder="Örn: 180" required>
             </div>
 
-            <div class="kdv-calculator-input">
-                <label for="kdvTutar">KDV Tutarı:</label>
-                <br><br>
-                <input type="number" id="kdvTutar" placeholder="Örn. 3500" required>
+            <div class="calculator-input">
+                <label for="weight">Kilo (kg):</label>
+                <input type="number" id="weight" min="20" placeholder="Örn: 75" required>
             </div>
 
-            <div class="kdv-calculator-buttons">
-                <button type="button" onclick="hesapla()">Hesapla</button>
-                <button type="button" onclick="sifirla()">Sıfırla</button>
+            <div class="calculator-buttons">
+                <button type="button" onclick="calculate()">Hesapla</button>
+                <button type="button" onclick="resetForm()">Temizle</button>
             </div>
-            
         </form>
-        <div id="resultBox" class="kdv-result-box">
-            <h4>Hesaplama Sonucu</h4>
-            <div class="kdv-result-row">
-                <span>KDV Hariç Tutar:</span>
-                <span id="resultHaricTutar"></span>
-            </div>
-            <div class="kdv-result-row">
-                <span>KDV (%):</span>
-                <span id="resultKdvOran"></span>
-            </div>
-            <div class="kdv-result-row">
-                <span>KDV Tutarı:</span>
-                <span id="resultKdv"></span>
-            </div>
-            <div class="kdv-result-row">
-                <span>KDV Dahil Tutar:</span>
-                <span id="resultDahilTotal"></span>
-            </div>
-            <div class="kdv-result-actions">
-                <button onclick="copyResults()">Kopyala</button>
-                <button onclick="shareResults()">Paylaş</button>
-                <button onclick="printResults()">Yazdır</button>               
-            </div>
+
+        <div id="resultBox" class="result-box" style="display: none;">
+            <h4>Sonuç</h4>
+            <div class="result" id="calculationResult"></div>
         </div>
-    </div>
-
-
+    </div>   
 
     <script>
-    function shareResults() {
-            const textToShare = document.getElementById('resultBox').innerText;
+        function calculate() {
+            const gender = document.querySelector('input[name="gender"]:checked').value;
+            const height = parseInt(document.getElementById('height').value);
+            const weight = parseInt(document.getElementById('weight').value);
 
-            if (navigator.share) {
-                navigator.share({
-                    title: 'KDV Hesaplama Sonuçları',
-                    text: textToShare,
-                    url: window.location.href 
-                }).then(() => {
-                    alert('Paylaşım başarılı!');
-                }).catch((error) => {
-                    console.error('Paylaşım başarısız oldu:', error);
-                });
-            } else {
-                alert('Bu tarayıcı paylaşma özelliğini desteklemiyor. Lütfen manuel olarak kopyalayarak paylaşın.');
-            }
-        }
+            
+            const bodySurfaceArea = (0.007184 * Math.pow(weight, 0.425) * Math.pow(height, 0.725)).toFixed(2);
 
+            
+            const leanBodyMass = gender === 'male'
+                ? (0.407 * weight + 0.267 * height - 19.2).toFixed(2)
+                : (0.252 * weight + 0.473 * height - 48.3).toFixed(2);
 
-    function copyResults() {
-            const textToCopy = document.getElementById('resultBox').innerText;
+                
+            const idealWeight = gender === 'male'
+                ? (50 + 0.9 * (height - 152)).toFixed(2)
+                : (45.5 + 0.9 * (height - 152)).toFixed(2);
 
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(textToCopy)
-                    .then(() => {
-                        alert('Sonuçlar kopyalandı!');
-                    })
-                    .catch((err) => {
-                        console.error('Kopyalama başarısız oldu:', err);
-                        alert('Kopyalama başarısız oldu. Lütfen tekrar deneyin.');
-                    });
-            } else {
-                const tempTextArea = document.createElement("textarea");
-                tempTextArea.value = textToCopy;
-                document.body.appendChild(tempTextArea);
-                tempTextArea.select();
-                try {
-                    document.execCommand('copy');
-                    alert('Sonuçlar kopyalandı!');
-                } catch (error) {
-                    console.error('Kopyalama başarısız oldu:', error);
-                    alert('Kopyalama başarısız oldu. Lütfen tekrar deneyin.');
-                }
-                document.body.removeChild(tempTextArea);
-            }
-        }
-    
-    function printResults() {
-        window.print();
-    }
-        function getKdvOrani() {
-            const selectedOran = document.querySelector('input[name="kdvOrani"]:checked');
-            if (!selectedOran) {
-                alert('Lütfen KDV Oranını Seçiniz!');
-                return null;
-            }
+            const bmi = (weight / ((height / 100) ** 2)).toFixed(1);
 
-            if (selectedOran.value === 'other') {
-                const otherKdvValue = parseFloat(document.getElementById('kdvOtherInput').value);
-                if (!otherKdvValue || isNaN(otherKdvValue) || otherKdvValue <= 0) {
-                    alert('Lütfen geçerli bir KDV oranı giriniz!');
-                    return null;
-                }
-                return otherKdvValue;
-            }
-            return parseFloat(selectedOran.value);
-        }
+            const resultMessage = bmi >= 30
+                ? "Kilonuzun yüksek olduğunu, sağlığınız için önlem almanız gerektiğini gösteriyor."
+                : "Kilonuz normal aralıkta, sağlığınızı korumak için dengeli bir beslenme sürdürebilirsiniz.";
 
-        function checkOtherKdv() {
-            const otherKdvInput = document.getElementById('kdvOtherInput');
-            const otherKdvRadio = document.getElementById('kdvOther');
-            otherKdvInput.style.display = otherKdvRadio.checked ? 'block' : 'none';
-        }
+            let resultText = `
+                Vücut Yüzey Alanı: ${bodySurfaceArea} metrekare
+                <hr>
+                Yağsız Vücut Ağırlığı: ${leanBodyMass} kg
+                <hr>
+                İdeal Kilo: ${idealWeight} kg
+                <hr>
+                Vücut Kitle İndeksi (BMI): ${bmi} kg / metrekare
+                <hr>
+                Sonuç: ${resultMessage}
+            `;
 
-        function hesapla() {
-            const kdvTutar = parseFloat(document.getElementById('kdvTutar').value);
-            const kdvOrani = getKdvOrani();
-            if (kdvOrani === null) return;
-
-            const islemSecimi = document.querySelector('input[name="islem"]:checked').value;
-
+            document.getElementById('calculationResult').innerHTML = resultText;
             document.getElementById('resultBox').style.display = 'block';
-
-            if (islemSecimi === 'dahil') {
-                const kdvHaric = kdvTutar / (1 + kdvOrani / 100);
-                const kdvValue = kdvTutar - kdvHaric;
-
-                document.getElementById('resultHaricTutar').innerText = kdvHaric.toFixed(2) + " TL";
-                document.getElementById('resultKdvOran').innerText = kdvOrani.toFixed(2) + "%";
-                document.getElementById('resultKdv').innerText = kdvValue.toFixed(2) + " TL";
-                document.getElementById('resultDahilTotal').innerText = kdvTutar.toFixed(2) + " TL";
-
-            } else if (islemSecimi === 'haric') {
-                const kdvValue = kdvTutar * (kdvOrani / 100);
-                const toplamTutar = kdvTutar + kdvValue;
-
-                document.getElementById('resultHaricTutar').innerText = kdvTutar.toFixed(2) + " TL";
-                document.getElementById('resultKdvOran').innerText = kdvOrani.toFixed(2) + "%";
-                document.getElementById('resultKdv').innerText = kdvValue.toFixed(2) + " TL";
-                document.getElementById('resultDahilTotal').innerText = toplamTutar.toFixed(2) + " TL";
-
-            } else if (islemSecimi === 'matrah') {
-                const matrah = kdvTutar / (kdvOrani / 100);
-                const toplamTutar = kdvTutar + matrah;
-
-                document.getElementById('resultHaricTutar').innerText = matrah.toFixed(2) + " TL";
-                document.getElementById('resultKdvOran').innerText = kdvOrani.toFixed(2) + "%";
-                document.getElementById('resultKdv').innerText = kdvTutar.toFixed(2) + " TL";
-                document.getElementById('resultDahilTotal').innerText = toplamTutar.toFixed(2) + " TL";
-            }
         }
 
-        function sifirla() {
-            document.getElementById('kdvForm').reset();
+        function resetForm() {
+            document.getElementById('idealWeightForm').reset();
             document.getElementById('resultBox').style.display = 'none';
-            document.getElementById('kdvOtherInput').style.display = 'none';
         }
     </script>
 </body>
