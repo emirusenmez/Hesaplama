@@ -171,7 +171,9 @@
         function toggleInputFields() {
             const operationType = document.getElementById('operationType').value;
             const secondInputLabel = document.querySelector('label[for="secondInput"]');
-            if (operationType === 'zamOrani') {
+            if (operationType === 'zamliFiyat') {
+                secondInputLabel.textContent = 'İkinci Değer (Oran % veya Fiyat):';
+            } else if {(operationType === 'zamOrani') {
                 secondInputLabel.textContent = 'Zamlı Fiyat:';
             } else {
                 secondInputLabel.textContent = 'Zam Oranı (%):';
