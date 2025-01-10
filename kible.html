@@ -86,11 +86,12 @@
             const qiblaLatitude = 21.4225; // Mekke'nin enlemi
             const qiblaLongitude = 39.8262; // Mekke'nin boylamı
 
+            // Kıble yönünü hesapla
             const qiblaDirection = calculateQiblaDirection(userLatitude, userLongitude, qiblaLatitude, qiblaLongitude);
 
             // Pusuladaki iğneyi doğru yönde döndür
             const needle = document.getElementById('needle');
-            needle.style.transform = `rotate(${qiblaDirection}deg)`;
+            needle.style.transform = `rotate(${qiblaDirection}deg)`;  // Kıble yönüne göre iğneyi döndür
 
             // Kullanıcıya bilgi ver
             document.getElementById('info').textContent = `Kıble yönü: ${qiblaDirection.toFixed(2)}°`;
