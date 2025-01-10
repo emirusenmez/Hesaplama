@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kıble Yönü Pusula</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .compass {
+            width: 300px;
+            height: 300px;
+            border: 2px solid black;
+            border-radius: 50%;
+            position: relative;
+            margin: 20px auto;
+        }
+        .arrow {
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-bottom: 50px solid red;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+    </style>
+</head>
+<body>
+    <h1>Kıble Yönü Pusulası</h1>
+    <p id="message">Konum bilgisi alınıyor...</p>
+    <div class="compass">
+        <div class="arrow" id="arrow"></div>
+    </div>
+
+    <script>
+        function findQibla() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const userLat = position.coords.latitude;
+                        const userLon = position.coords.longitude;
+
+                        const kaabaLat = 21.4225; // Kâbe'nin enlemi
+                        const kaabaLon = 39.8262; // Kâbe'nin boylamı
+
+                        const qiblaDirection = calculateQiblaDirection(userLat, userLon, kaabaLat, kaabaLon);
+
+                        document.getElementById('message').textContent = "Kıble yönü bulundu.";
+                        rotateArrow(qiblaDirection);
+                    },
+                    (error) => {
+                        let errorMessage = "";
+                        switch (error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage = "Kullanıcı konum iznini reddetti.";
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage = "Konum bilgisi alınamıyor.";
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage = "Konum isteği zaman aşımına uğradı.";
+                                break;
+                            default:
+                                errorMessage = "Bilinmeyen bir hata oluştu.";
+                        }
+                        document.getElementById('message').textContent = errorMessage;
+                    }
+                );
+            } else {
+                document.getElementById('message').textContent = "Tarayıcınız konum bilgisini desteklemiyor.";
+            }
+        }
+
+        function calculateQiblaDirection(userLat, userLon, kaabaLat, kaabaLon) {
+            const toRadians = (degree) => (degree * Math.PI) / 180;
+            const toDegrees = (radian) => (radian * 180) / Math.PI;
+
+            const deltaLon = toRadians(kaabaLon - userLon);
+
+            const userLatRad = toRadians(userLat);
+            const kaabaLatRad = toRadians(kaabaLat);
+
+            const x = Math.cos(kaabaLatRad) * Math.sin(deltaLon);
+            const y = Math.cos(userLatRad) * Math.sin(kaabaLatRad) -
+                      Math.sin(userLatRad) * Math.cos(kaabaLatRad) * Math.cos(deltaLon);
+
+            const qiblaAngle = toDegrees(Math.atan2(x, y));
+            return (qiblaAngle + 360) % 360; // Pozitif açıya çevir
+        }
+
+        function rotateArrow(degrees) {
+            const arrow = document.getElementById('arrow');
+            arrow.style.transform = `translate(-50%, -50%) rotate(${degrees}deg)`;
+        }
+
+        // Sayfa yüklendiğinde kıble yönünü bul
+        findQibla();
+    </script>
+</body>
+</html>
