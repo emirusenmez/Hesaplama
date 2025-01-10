@@ -14,6 +14,7 @@
             height: 100vh;
             margin: 0;
             background-color: #f4f4f4;
+            flex-direction: column;
         }
 
         .container {
@@ -65,6 +66,17 @@
 
         #info {
             margin-top: 20px;
+            font-size: 18px;
+        }
+
+        #status {
+            font-size: 20px;
+            color: green;
+            margin-top: 10px;
+        }
+
+        #status.error {
+            color: red;
         }
     </style>
 </head>
@@ -74,31 +86,21 @@
             <div class="needle" id="needle"></div>
             <div class="compass-center"></div>
         </div>
-        <button id="findQiblaBtn">Kıbleyi Bul</button>
-        <div id="info"></div>
+        <div id="info">Kıbleyi bulmaya çalışın.</div>
+        <div id="status"></div>
     </div>
 
     <script>
-        document.getElementById('findQiblaBtn').addEventListener('click', function() {
-            // Kıble yönünü belirlemek için kullanılacak örnek bir coğrafi enlem ve boylam.
-            const userLatitude = 41.0082;  // Örnek: İstanbul'un enlemi
-            const userLongitude = 28.9784; // Örnek: İstanbul'un boylamı
-            const qiblaLatitude = 21.4225; // Mekke'nin enlemi
-            const qiblaLongitude = 39.8262; // Mekke'nin boylamı
+        // Kâbe'nin sabit koordinatları (Mekke'nin enlem ve boylamı)
+        const qiblaLatitude = 21.4225; // Mekke'nin enlemi
+        const qiblaLongitude = 39.8262; // Mekke'nin boylamı
 
-            // Kıble yönünü hesapla
-            const qiblaDirection = calculateQiblaDirection(userLatitude, userLongitude, qiblaLatitude, qiblaLongitude);
+        // Kullanıcının enlem ve boylamı için örnek veriler (gerçek veriler alınabilir)
+        const userLatitude = 41.0082;  // Örnek: İstanbul'un enlemi
+        const userLongitude = 28.9784; // Örnek: İstanbul'un boylamı
 
-            // Pusuladaki iğneyi doğru yönde döndür
-            const needle = document.getElementById('needle');
-            needle.style.transform = `rotate(${qiblaDirection}deg)`;  // Kıble yönüne göre iğneyi döndür
-
-            // Kullanıcıya bilgi ver
-            document.getElementById('info').textContent = `Kıble yönü: ${qiblaDirection.toFixed(2)}°`;
-        });
-
+        // Telefonun doğru yönü gösterip göstermediğini kontrol eden fonksiyon
         function calculateQiblaDirection(latitude1, longitude1, latitude2, longitude2) {
-            // Yüksek hassasiyetli hesaplama için matematiksel formül
             const rad = Math.PI / 180;
             const deltaLon = (longitude2 - longitude1) * rad;
             const lat1 = latitude1 * rad;
@@ -110,6 +112,37 @@
             const qiblaAngle = Math.atan2(y, x) * 180 / Math.PI;
             return (qiblaAngle + 360) % 360; // 0 ile 360 derece arasında bir değer döndür
         }
+
+        // Kıble yönü hesaplandıktan sonra oku döndüren fonksiyon
+        function updateCompass(qiblaDirection) {
+            const needle = document.getElementById('needle');
+            needle.style.transform = `rotate(${qiblaDirection}deg)`;  // Kıble yönüne göre iğneyi döndür
+        }
+
+        // Telefonun oryantasyon değişikliklerini algılayacak event listener
+        window.addEventListener('deviceorientation', function(event) {
+            // Telefonun yatay düzlemdeki dönüş açısını (alpha) alıyoruz
+            const alpha = event.alpha; // alpha, 0-360 derece arasında bir değer döndürür
+
+            // Kıble yönünü hesapla
+            const qiblaDirection = calculateQiblaDirection(userLatitude, userLongitude, qiblaLatitude, qiblaLongitude);
+
+            // Pusuladaki ok yönünü güncelle
+            updateCompass(qiblaDirection);
+
+            // Kıbleye doğru yönelindiğinde bilgi ver
+            const difference = Math.abs(qiblaDirection - alpha);
+            const isCorrectDirection = difference < 5; // 5 derece fark kabul edilebilir
+
+            const statusElement = document.getElementById('status');
+            if (isCorrectDirection) {
+                statusElement.textContent = 'Doğru Yöndesiniz!';
+                statusElement.classList.remove('error');
+            } else {
+                statusElement.textContent = 'Yanlış Yön, Lütfen Kıbleyi Bulmaya Çalışın';
+                statusElement.classList.add('error');
+            }
+        });
     </script>
 </body>
 </html>
