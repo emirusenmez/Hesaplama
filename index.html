@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İdeal Kilo Hesaplama Aracı</title>
+    <title>Yakıt Tüketim Hesaplama Aracı</title>
     <style>
         body {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -13,213 +13,209 @@
         }
 
         .calculator-container {
-            width: 100%;
             max-width: 600px;
-            margin: 0 auto;
+            margin: auto;
             background-color: #FCFCFC;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
         }
 
-        h3.calculator-title {
-            font-size: 20px;
+        h3 {
+            text-align: center;
+            font-size: 24px;
             margin-bottom: 20px;
-            font-weight: bold;
-            color: #3C4852;
         }
 
         .calculator-input {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
+            margin-bottom: 15px;
         }
 
         .calculator-input label {
-            margin-bottom: 10px;
-            font-size: 14px;
-            color: #3C4852;
+            display: block;
+            margin-bottom: 5px;
         }
 
-        .radio-group {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-        }
-
-        .radio-group label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
+        .calculator-input input, select {
+            width: calc(100%);
+            padding: 10px;
+            border: 1px solid #ccc;
             border-radius: 5px;
-            padding: 10px 30px;
-            transition: background-color 0.3s, border-color 0.3s;
-            font-size: 16px;
-            background-color: #1DA1F2;
-            color: white;
         }
-
-        .radio-group input[type="radio"] {
-            display: none;
-        }
-
-        .radio-group input[type="radio"]:checked + label {
-            background-color: #da541a;
-            color: white;
-        }
-
-        .calculator-input input[type="number"] {
+        input#paidAmount1 , input#distance1 ,input#paidAmount2 , input#distance2 ,input#fuelPerKm , input#fuelPerKm2 ,input#distanceElectric , input#consumptionElectric, input#pricePerKwh {
             width: calc(100% - 20px);
             padding: 10px;
             border: 1px solid #ccc;
-            margin-bottom: 20px;
             border-radius: 5px;
         }
 
-        .calculator-buttons {
+        .buttons {
             display: flex;
-            justify-content: space-around;
+            justify-content: space-between;
+            gap: 10px;
             margin-top: 20px;
         }
 
-        .calculator-buttons button {
+        .buttons button {
+            flex: 1;
             background-color: #1DA1F2;
-            color: #fff;
-            cursor: pointer;
+            color: white;
             border: none;
             padding: 10px 20px;
-            font-size: 16px;            
+            cursor: pointer;
             border-radius: 5px;
         }
 
-        .calculator-buttons button:hover {
+        .buttons button:hover {
             background-color: #1A91DA;
         }
 
         .result-box {
             margin-top: 20px;
             padding: 20px;
-            background-color: #3C4852;
-            color: #fff; 
-            border-radius: 10px;
+            background-color: #47535C;
+            color: white;
+            border-radius: 5px;
+            display: none;
         }
 
         .result-box h4 {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             font-size: 18px;
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 10px;
-            color: #fff;
+            font-weight: bold;
         }
 
-        .result {
-            font-size: 16px;
-            background-color: #47535C;
-            padding: 10px;
-            font-weight: 600;
-            border-bottom: 1px solid #ccc;
+        .hidden {
+            display: none;
         }
 
-        .result:last-child {
-            border-bottom: none;
-        }
 
-        @media (max-width: 768px) {
-            .calculator-container {
-                padding: 10px;
+        @media (max-width: 600px) {
+            .buttons {
+                flex-direction: column;
             }
 
-            .calculator-buttons button {
-                font-size: 14px;
-                padding: 8px 16px;
-            }
-
-            .calculator-input input[type="number"] {
-                padding: 8px;
-                font-size: 14px;
+            .buttons button {
+                width: 100%;
+                margin-bottom: 10px;
             }
         }
     </style>
 </head>
 <body>
     <div class="calculator-container">
-        <h3 class="calculator-title">İdeal Kilo Hesaplama Aracı</h3>
-        <form id="idealWeightForm">
+        <h3>Yakıt Tüketim Hesaplama Aracı</h3>
+        <form id="fuelForm">
             <div class="calculator-input">
-                <div class="radio-group">
-                    <input type="radio" id="male" name="gender" value="male" required>
-                    <label for="male">Erkek</label>
-                    <input type="radio" id="female" name="gender" value="female">
-                    <label for="female">Kadın</label>
-                </div>
+                <label for="operationType">İşlem:</label>
+                <select id="operationType" onchange="showFields()">
+                    <option value="averageConsumption" selected>Ortalama Yakıt Tüketimi Bul</option>
+                    <option value="distanceWithFuel">Gidilebilecek Mesafeyi Öğren</option>
+                    <option value="fuelCostForDistance">Ödenecek Tutarı Hesapla</option>
+                    <option value="electricCar">Elektrikli Araç Hesaplama</option>
+                </select>
+            </div>
+            
+
+            <div id="averageConsumptionFields" class="calculator-input hidden">
+                <label>Ödenen Tutar (TL):</label>
+                <input type="number" id="paidAmount1" placeholder="Örn. 500" required>
+                <br><br>
+                <label>Gidilen Mesafe (KM):</label>
+                <input type="number" id="distance1" placeholder="Örn. 100" required>
             </div>
 
-            <div class="calculator-input">
-                <label for="height">Boy (cm):</label>
-                <input type="number" id="height" min="100" placeholder="Örn: 180" required>
+            <div id="distanceWithFuelFields" class="calculator-input hidden">
+                <label>Ödenen Tutar (TL):</label>
+                <input type="number" id="paidAmount2" placeholder="Örn. 500" required>
+                <br><br>
+                <label>KM Başına Tüketim (Litre):</label>
+                <input type="number" id="fuelPerKm" placeholder="Örn. 0.1" required>
             </div>
 
-            <div class="calculator-input">
-                <label for="weight">Kilo (kg):</label>
-                <input type="number" id="weight" min="20" placeholder="Örn: 75" required>
+            <div id="fuelCostForDistanceFields" class="calculator-input hidden">
+                <label>Gidilecek Mesafe (KM):</label>
+                <input type="number" id="distance2" placeholder="Örn. 100" required>
+                <br><br>
+                <label>KM Başına Tüketim (Litre):</label>
+                <input type="number" id="fuelPerKm2" placeholder="Örn. 0.1" required>
             </div>
 
-            <div class="calculator-buttons">
+            <div id="electricCarFields" class="calculator-input hidden">
+                <label>Gidilecek Mesafe (KM):</label><br>
+                <input type="number" id="distanceElectric" placeholder="Örn. 100" required>
+                <br><br>
+                <label>KM Başına Tüketim (kWh/100 km):</label><br>
+                <input type="number" id="consumptionElectric" placeholder="Örn. 15" required>
+                <br><br>
+                <label>Elektrik Birim Fiyatı (TL/kWh):</label><br>
+                <input type="number" id="pricePerKwh" placeholder="Örn. 1.2" required>
+            </div>
+
+            <div class="buttons">
                 <button type="button" onclick="calculate()">Hesapla</button>
-                <button type="button" onclick="resetForm()">Temizle</button>
+                <button type="button" onclick="resetForm()">Sıfırla</button>
             </div>
         </form>
 
-        <div id="resultBox" class="result-box" style="display: none;">
-            <h4>Sonuç</h4>
-            <div class="result" id="calculationResult"></div>
+        <div id="resultBox" class="result-box">
+            <h4>Hesaplama Sonucu</h4>
+            <div id="result"></div>
         </div>
-    </div>   
+    </div>
 
     <script>
+        function showFields() {
+           const operationType = document.getElementById('operationType').value;
+
+            document.getElementById('averageConsumptionFields').classList.toggle('hidden', operationType !== 'averageConsumption');
+            document.getElementById('distanceWithFuelFields').classList.toggle('hidden', operationType !== 'distanceWithFuel');
+            document.getElementById('fuelCostForDistanceFields').classList.toggle('hidden', operationType !== 'fuelCostForDistance');
+            document.getElementById('electricCarFields').classList.toggle('hidden', operationType !== 'electricCar');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('operationType').value = 'averageConsumption'; // Varsayılan işlem seçimi
+            showFields(); // İlgili alanları göster
+        });
+
+
         function calculate() {
-            const gender = document.querySelector('input[name="gender"]:checked').value;
-            const height = parseInt(document.getElementById('height').value);
-            const weight = parseInt(document.getElementById('weight').value);
+            const operationType = document.getElementById('operationType').value;
+            let resultText = '';
 
-            
-            const bodySurfaceArea = (0.007184 * Math.pow(weight, 0.425) * Math.pow(height, 0.725)).toFixed(2);
+            if (operationType === 'averageConsumption') {
+                const paidAmount = parseFloat(document.getElementById('paidAmount1').value);
+                const distance = parseFloat(document.getElementById('distance1').value);
+                const averageConsumption = (paidAmount / distance).toFixed(2);
+                resultText = `Ortalama Yakıt Tüketimi: ${averageConsumption} TL/KM`;
 
-            
-            const leanBodyMass = gender === 'male'
-                ? (0.407 * weight + 0.267 * height - 19.2).toFixed(2)
-                : (0.252 * weight + 0.473 * height - 48.3).toFixed(2);
+            } else if (operationType === 'distanceWithFuel') {
+                const paidAmount = parseFloat(document.getElementById('paidAmount2').value);
+                const fuelPerKm = parseFloat(document.getElementById('fuelPerKm').value);
+                const distance = (paidAmount / fuelPerKm).toFixed(2);
+                resultText = `Gidilebilecek Mesafe: ${distance} KM`;
 
-                
-            const idealWeight = gender === 'male'
-                ? (50 + 0.9 * (height - 152)).toFixed(2)
-                : (45.5 + 0.9 * (height - 152)).toFixed(2);
+            } else if (operationType === 'fuelCostForDistance') {
+                const distance = parseFloat(document.getElementById('distance2').value);
+                const fuelPerKm = parseFloat(document.getElementById('fuelPerKm2').value);
+                const totalCost = (distance * fuelPerKm).toFixed(2);
+                resultText = `Ödenecek Tutar: ${totalCost} TL`;
 
-            const bmi = (weight / ((height / 100) ** 2)).toFixed(1);
+            } else if (operationType === 'electricCar') {
+                const distance = parseFloat(document.getElementById('distanceElectric').value);
+                const consumptionElectric = parseFloat(document.getElementById('consumptionElectric').value);
+                const pricePerKwh = parseFloat(document.getElementById('pricePerKwh').value);
+                const totalCost = ((distance * consumptionElectric) / 100 * pricePerKwh).toFixed(2);
+                resultText = `Elektrikli Araç için Ödenecek Tutar: ${totalCost} TL`;
+            }
 
-            const resultMessage = bmi >= 30
-                ? "Kilonuzun yüksek olduğunu, sağlığınız için önlem almanız gerektiğini gösteriyor."
-                : "Kilonuz normal aralıkta, sağlığınızı korumak için dengeli bir beslenme sürdürebilirsiniz.";
-
-            let resultText = `
-                Vücut Yüzey Alanı: ${bodySurfaceArea} metrekare
-                <hr>
-                Yağsız Vücut Ağırlığı: ${leanBodyMass} kg
-                <hr>
-                İdeal Kilo: ${idealWeight} kg
-                <hr>
-                Vücut Kitle İndeksi (BMI): ${bmi} kg / metrekare
-                <hr>
-                Sonuç: ${resultMessage}
-            `;
-
-            document.getElementById('calculationResult').innerHTML = resultText;
+            document.getElementById('result').innerText = resultText;
             document.getElementById('resultBox').style.display = 'block';
         }
 
         function resetForm() {
-            document.getElementById('idealWeightForm').reset();
+            document.getElementById('fuelForm').reset();
             document.getElementById('resultBox').style.display = 'none';
         }
     </script>
