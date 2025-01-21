@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gebelik Hesaplama Aracı</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #FCFCFC;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h3.calculator-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .calculator-input {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calculator-input label {
+            margin-bottom: 10px;
+        }
+
+        .calculator-input select, .calculator-input input {
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .calculator-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        button {
+            background-color: #1DA1F2;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;            
+            border-radius: 5px;
+            width: 30%;
+        }
+
+        button:hover {
+            background-color: #1A91DA;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #36454f;
+            color: #fff;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .result-box h4 {
+            margin-bottom: 10px;
+        }
+
+        .result {
+            font-size: 18px;
+        }
+
+        @media (max-width: 600px) {
+            .calculator-container {
+                padding: 10px;
+            }
+
+            button {
+                width: 35%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h3 class="calculator-title">Gebelik Hesaplama Aracı</h3>
+        <form id="calculatorForm">
+            <div class="calculator-input">
+                <label for="calculationType">Hesaplama Şekli:</label>
+                <select id="calculationType" required>
+                    <option value="lastPeriod">Son Adetin Başlangıç Tarihi ile (Normal Gebelik)</option>
+                    <option value="conception">Gebe Kalma Tarihi ile (Normal Gebelik)</option>
+                    <option value="embryoTransfer">Embriyo Transfer Tarihi ile (Tüp Bebek)</option>
+                    <option value="blastocystTransfer">Blastokist Transfer Tarihi ile (Tüp Bebek)</option>
+                    <option value="eggCollection">Yumurta Toplama Tarihi ile (Tüp Bebek)</option>
+                </select>
+
+                <label for="selectedDate">Tarih:</label>
+                <input type="date" id="selectedDate" required>
+            </div>
+
+            <div class="calculator-buttons">
+                <button type="button" onclick="calculatePregnancy()">Hesapla</button>
+                <button type="button" onclick="resetForm()">Sıfırla</button>
+            </div>
+        </form>
+
+        <div id="resultBox" class="result-box">
+            <h4>Sonuç:</h4>
+            <div id="result" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        function calculatePregnancy() {
+            const calculationType = document.getElementById('calculationType').value;
+            const selectedDate = document.getElementById('selectedDate').value;
+
+            if (!calculationType || !selectedDate) {
+                alert('Lütfen tüm alanları doldurunuz!');
+                return;
+            }
+
+            const date = new Date(selectedDate);
+            const today = new Date();
+            let result;
+            let daysPassed, daysLeft, weekNumber, dayInWeek, zodiacSign;
+
+            switch (calculationType) {
+                case 'lastPeriod':
+                    date.setDate(date.getDate() + 280); // 40 hafta
+                    break;
+                case 'conception':
+                    date.setDate(date.getDate() + 266); // 38 hafta
+                    break;
+                case 'embryoTransfer':
+                    date.setDate(date.getDate() + 266); // Embriyo transferi sonrası 38 hafta
+                    break;
+                case 'blastocystTransfer':
+                    date.setDate(date.getDate() + 261); // Blastokist transferi sonrası 37 hafta
+                    break;
+                case 'eggCollection':
+                    date.setDate(date.getDate() + 266); // Yumurta toplama sonrası 38 hafta
+                    break;
+                default:
+                    result = 'Geçersiz hesaplama türü.';
+                    document.getElementById('result').innerText = result;
+                    document.getElementById('resultBox').style.display = 'block';
+                    return;
+            }
+
+            daysPassed = Math.floor((today - new Date(selectedDate)) / (1000 * 60 * 60 * 24));
+            daysLeft = Math.floor((date - today) / (1000 * 60 * 60 * 24));
+            weekNumber = Math.floor(daysPassed / 7);
+            dayInWeek = daysPassed % 7;
+
+            // Determine zodiac sign
+            const birthMonth = date.getMonth() + 1;
+            const birthDay = date.getDate();
+            if ((birthMonth === 3 && birthDay >= 21) || (birthMonth === 4 && birthDay <= 19)) {
+                zodiacSign = 'Koç';
+            } else if ((birthMonth === 4 && birthDay >= 20) || (birthMonth === 5 && birthDay <= 20)) {
+                zodiacSign = 'Boğa';
+            } else if ((birthMonth === 5 && birthDay >= 21) || (birthMonth === 6 && birthDay <= 20)) {
+                zodiacSign = 'İkizler';
+            } else if ((birthMonth === 6 && birthDay >= 21) || (birthMonth === 7 && birthDay <= 22)) {
+                zodiacSign = 'Yengeç';
+            } else if ((birthMonth === 7 && birthDay >= 23) || (birthMonth === 8 && birthDay <= 22)) {
+                zodiacSign = 'Aslan';
+            } else if ((birthMonth === 8 && birthDay >= 23) || (birthMonth === 9 && birthDay <= 22)) {
+                zodiacSign = 'Başak';
+            } else if ((birthMonth === 9 && birthDay >= 23) || (birthMonth === 10 && birthDay <= 22)) {
+                zodiacSign = 'Terazi';
+            } else if ((birthMonth === 10 && birthDay >= 23) || (birthMonth === 11 && birthDay <= 21)) {
+                zodiacSign = 'Akrep';
+            } else if ((birthMonth === 11 && birthDay >= 22) || (birthMonth === 12 && birthDay <= 21)) {
+                zodiacSign = 'Yay';
+            } else if ((birthMonth === 12 && birthDay >= 22) || (birthMonth === 1 && birthDay <= 19)) {
+                zodiacSign = 'Oğlak';
+            } else if ((birthMonth === 1 && birthDay >= 20) || (birthMonth === 2 && birthDay <= 18)) {
+                zodiacSign = 'Kova';
+            } else {
+                zodiacSign = 'Balık';
+            }
+
+            if (daysLeft < 0) {
+                result = `Bebeğiniz doğdu! Tahmini doğum tarihi: ${date.toLocaleDateString()} (${zodiacSign} burcu)`;
+            } else {
+                result = `Gebelik Haftası: Gebeliğin ${weekNumber}. haftasındasınız. ${weekNumber} hafta ${dayInWeek} günlük hamilesiniz (${daysPassed}. gün)<br><hr />
+                Geçen günler: ${daysPassed}<br><hr />
+                Kalan günler: ${daysLeft}<br><hr />
+                Tahmini doğum tarihi: ${date.toLocaleDateString()} (${zodiacSign} burcu)`;
+            }
+
+            document.getElementById('result').innerHTML = result;
+            document.getElementById('resultBox').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('calculatorForm').reset();
+            document.getElementById('resultBox').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
