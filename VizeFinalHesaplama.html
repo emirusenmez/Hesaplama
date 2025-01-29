@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vize ve Final Notu Hesaplama</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #FCFCFC;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .calculator-input {
+            margin-bottom: 15px;
+        }
+
+        .calculator-input label {
+            font-weight: bold;
+        }
+
+        input.vizeScore, input.vizeWeight, input#finalWeight, input#minimumAverage {
+            width: 27%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        input#finalScore {
+            width: 27%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 0px 0px 0px 11px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .buttons button {
+            background-color: #1DA1F2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .buttons button:hover {
+            background-color: #1A91DA;
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #47535C;
+            color: white;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .divider {
+            border-top: 1px solid white;
+            margin: 15px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width:680px) {
+            .calculator-input {
+                flex-direction: column;
+            }
+
+            .buttons button {
+                width: 100px;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body onload="initializeForm()">
+
+    <div class="calculator-container">
+        <h3>Vize ve Final Notu Hesaplama Aracı</h3>
+
+        <form id="examForm">
+            <div class="calculator-input">
+                <label>İşlem:</label>
+                <select id="operationType" onchange="toggleOperation()">
+                    <option value="average">Vize ve Final ile Ortalama Hesapla</option>
+                    <option value="minimumFinal">Minimum Final Puanını Hesapla</option>
+                </select>
+            </div>
+
+            <div class="calculator-input">
+                <label>Vize Sayısı:</label>
+                <select id="vizeCount" onchange="generateVizeInputs()">
+                    <option value="1" selected>1 Vize</option>
+                    <option value="2">2 Vize</option>
+                    <option value="3">3 Vize</option>
+                </select>
+            </div>
+
+            <div id="vizeInputs"></div>
+
+            <div id="finalInput" class="calculator-input">
+                <label>Final Puanı / Oranı (%):</label>
+                <input type="number" id="finalScore" placeholder="Final Puanı" min="0" max="100">
+                <input type="number" id="finalWeight" placeholder="Oran (%)" min="0" max="100">
+            </div>
+
+            <div id="minimumAverageInput" class="calculator-input hidden">
+                <label>Geçmek İçin Gerekli Minimum Ortalama:</label>
+                <input type="number" id="minimumAverage" placeholder="Örn. 60" min="0" max="100">
+            </div>
+
+            <div class="buttons">
+                <button type="button" onclick="calculate()">Hesapla</button>
+                <button type="button" onclick="resetForm()">Temizle</button>
+            </div>
+        </form>
+
+        <div id="resultBox" class="result-box">
+            <h4>Sonuç</h4>
+            <div id="result"></div>
+            <div class="divider"></div>
+        </div>
+    </div>
+
+    <script>
+        function initializeForm() {
+            generateVizeInputs();
+        }
+
+        function toggleOperation() {
+            const operationType = document.getElementById('operationType').value;
+            const minimumAverageInput = document.getElementById('minimumAverageInput');
+
+            minimumAverageInput.classList.toggle('hidden', operationType !== 'minimumFinal');
+            document.getElementById('finalInput').style.display =
+                operationType === 'minimumFinal' ? 'none' : 'block';
+        }
+
+        function generateVizeInputs() {
+            const vizeCount = parseInt(document.getElementById('vizeCount').value);
+            const vizeInputs = document.getElementById('vizeInputs');
+            vizeInputs.innerHTML = '';
+
+            for (let i = 1; i <= vizeCount; i++) {
+                vizeInputs.innerHTML += `
+                    <div class="calculator-input">
+                        <label>${i}. Vize Puanı / Oranı (%):</label>
+                        <input type="number" class="vizeScore" placeholder="Puan" min="0" max="100">
+                        <input type="number" class="vizeWeight" placeholder="Oran (%)" min="0" max="100">
+                    </div>
+                `;
+            }
+        }
+
+        function calculate() {
+            const operationType = document.getElementById('operationType').value;
+            let resultText = '';
+
+            if (operationType === 'average') {
+                let totalScore = 0;
+                let totalWeight = 0;
+
+                document.querySelectorAll('.vizeScore').forEach((input, index) => {
+                    const score = parseFloat(input.value) || 0;
+                    const weight = parseFloat(document.querySelectorAll('.vizeWeight')[index].value) / 100;
+                    totalScore += score * weight;
+                    totalWeight += weight;
+                });
+
+                const finalScore = parseFloat(document.getElementById('finalScore').value) || 0;
+                const finalWeight = parseFloat(document.getElementById('finalWeight').value) / 100;
+
+                if (totalWeight + finalWeight !== 1) {
+                    alert('Oranların toplamı 100 olmalıdır!');
+                    return;
+                }
+
+                const average = totalScore + (finalScore * finalWeight);
+                resultText = `Ortalama: ${average.toFixed(2)}`;
+
+            } else if (operationType === 'minimumFinal') {
+                let totalVizeScore = 0;
+                let totalWeight = 0;
+
+                document.querySelectorAll('.vizeScore').forEach((input, index) => {
+                    const score = parseFloat(input.value) || 0;
+                    const weight = parseFloat(document.querySelectorAll('.vizeWeight')[index].value) / 100;
+                    totalVizeScore += score * weight;
+                    totalWeight += weight;
+                });
+
+                const minAverage = parseFloat(document.getElementById('minimumAverage').value) || 0;
+                const requiredFinal = (minAverage - totalVizeScore) / (1 - totalWeight);
+
+                if (requiredFinal <= 0) {
+                    resultText = "Bu dersten geçtiniz!";
+                } else {
+                    resultText = `Gerekli Final Puanı: ${requiredFinal.toFixed(2)}`;
+                }
+            }
+
+            document.getElementById('result').innerHTML = resultText;
+            document.getElementById('resultBox').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('examForm').reset();
+            document.getElementById('resultBox').style.display = 'none';
+        }
+    </script>
+
+</body>
+</html>

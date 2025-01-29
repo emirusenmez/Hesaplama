@@ -48,8 +48,9 @@
             margin-bottom: 20px;
             border-radius: 5px;
         }
+
         .calculator-input select {
-            width: calc(100% );
+            width: calc(100%);
             padding: 10px;
             border: 1px solid #ccc;
             margin-bottom: 20px;
@@ -105,6 +106,11 @@
             border-bottom: none;
         }
 
+        .highlight {
+            color: yellow;
+            font-weight: bold;
+        }
+
         .additional-buttons {
             display: flex;
             justify-content: space-around;
@@ -143,14 +149,12 @@
     </style>
 </head>
 <body>
-    <h1>düzeltme olabilir</h1>
     <div class="calculator-container">
         <h3 class="calculator-title">OBP Hesaplama Aracı</h3>
         <form id="obpForm">
             <div class="calculator-input">
-                <label for="calculationType">Hesaplama Türü:</label>
+                <label for="calculationType">Öğrenim Türünü Seçiniz:</label>
                 <select id="calculationType" onchange="toggleInputs()">
-                    <option value="singleScore">Lise Mezuniyet Puanı</option>
                     <option value="multipleScores">9-12. Sınıf Ortalamaları</option>
                     <option value="middleSchoolScores">6-8. Sınıf Ortalamaları</option>
                 </select>
@@ -210,29 +214,30 @@
         function calculate() {
             const calculationType = document.getElementById('calculationType').value;
             let obp = 0;
-            
+
             if (calculationType === 'singleScore') {
-                const score = parseFloat(document.getElementById('singleScore').value);
+                const score = validateScore('singleScore');
+                if (score === null) return;
                 obp = score * 5;
             } else if (calculationType === 'multipleScores') {
                 const scores = [
-                    parseFloat(document.getElementById('grade9').value),
-                    parseFloat(document.getElementById('grade10').value),
-                    parseFloat(document.getElementById('grade11').value),
-                    parseFloat(document.getElementById('grade12').value)
+                    validateScore('grade9'),
+                    validateScore('grade10'),
+                    validateScore('grade11'),
+                    validateScore('grade12')
                 ];
+                if (scores.includes(null)) return;
                 const average = scores.reduce((a, b) => a + b, 0) / scores.length;
                 obp = average * 5;
             } else if (calculationType === 'middleSchoolScores') {
                 const scores = [
-                    parseFloat(document.getElementById('grade6').value),
-                    parseFloat(document.getElementById('grade7').value),
-                    parseFloat(document.getElementById('grade8').value)
+                    validateScore('grade6'),
+                    validateScore('grade7'),
+                    validateScore('grade8')
                 ];
+                if (scores.includes(null)) return;
                 const average = scores.reduce((a, b) => a + b, 0) / scores.length;
-                document.getElementById('calculationResult').innerText = `Ortalamanız: ${average.toFixed(2)}`;
-                document.getElementById('resultBox').style.display = 'block';
-                return;
+                obp = average * 5;
             }
 
             const obp500 = obp.toFixed(3);
@@ -240,15 +245,24 @@
             const obp018 = (obp * 0.18).toFixed(3);
 
             const resultText = `
-                500 üzerinden OBP: ${obp500}
+                500 üzerinden OBP: <span class="highlight">${obp500}</span>
                 <hr>
-                0,12 katsayılı OBP: ${obp012} (Eklenecek puan)
+                0,12 katsayılı OBP: <span class="highlight">${obp012}</span> (Eklenecek puan)
                 <hr>
-                0,18 ek katsayılı OBP: ${obp018} (Ek puanlı)
+                0,18 ek katsayılı OBP: <span class="highlight">${obp018}</span> (Ek puanlı)
             `;
 
             document.getElementById('calculationResult').innerHTML = resultText;
             document.getElementById('resultBox').style.display = 'block';
+        }
+
+        function validateScore(inputId) {
+            const value = parseFloat(document.getElementById(inputId).value);
+            if (isNaN(value) || value < 0 || value > 100) {
+                alert(`Lütfen ${inputId} alanına 0-100 arasında bir değer giriniz!`);
+                return null;
+            }
+            return value;
         }
 
         function resetForm() {

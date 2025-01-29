@@ -117,6 +117,9 @@
         .additional-buttons button:hover {
             background-color: #3C4852;
         }
+        .highlight{
+            color: yellow;
+        }
     </style>
 </head>
 <body>
@@ -170,19 +173,28 @@
             const dayNames = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
 
             const totalDays = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24));
-            const years = Math.floor(totalDays / 365);
-            const months = Math.floor((totalDays % 365) / 30);
-            const days = totalDays % 30;
+
+            // Ortalama yıl uzunluğunu (365.25 gün) kullanalım
+            const years = Math.floor(totalDays / 365.25);
+
+            // Artık yılları dikkate alarak kalan günleri hesaplayalım
+            const remainingDaysAfterYears = totalDays - Math.floor(years * 365.25);
+
+            // Ayları ve kalan günleri hesaplayalım
+            const months = Math.floor(remainingDaysAfterYears / 30);
+            const days = remainingDaysAfterYears % 30;
+
+            // Haftaları hesaplayalım
             const weeks = (totalDays / 7).toFixed(2);
 
             resultText += `
-                <p>Girdiğiniz Tarih Aralığı: ${startDate.toLocaleDateString('tr-TR')} ${dayNames[startDate.getDay()]} ile ${endDate.toLocaleDateString('tr-TR')} ${dayNames[endDate.getDay()]} arası</p>
+                <p>Girdiğiniz Tarih Aralığı: <span class="highlight">${startDate.toLocaleDateString('tr-TR')} ${dayNames[startDate.getDay()]} ile ${endDate.toLocaleDateString('tr-TR')} ${dayNames[endDate.getDay()]}</span> arası</p>
                 <hr>
-                <p>Girdiğiniz Tarihler Arasındaki Gün Sayısı: ${totalDays} gün</p>
+                <p>Girdiğiniz Tarihler Arasındaki Gün Sayısı: <span class="highlight">${totalDays} </span>gün</p>
                 <hr>
-                <p>Bu Tarihler Arasındaki Süre: ${years} yıl ${months} ay ${days} gün</p>
+                <p>Bu Tarihler Arasındaki Süre: <span class="highlight">${years} yıl <span class="highlight">${months} </span>ay <span class="highlight">${days}</span> gün</p>
                 <hr>
-                <p>Girdiğiniz Tarihler Arasındaki Hafta Sayısı: ${weeks} hafta (${totalDays} gün)</p>
+                <p>Girdiğiniz Tarihler Arasındaki Hafta Sayısı: <span class="highlight">${weeks}</span> hafta <span class="highlight">(${totalDays} gün)</span></p>
             `;
 
             document.getElementById('calculationResult').innerHTML = resultText;

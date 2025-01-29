@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yüzde Hesaplama Aracı</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #FCFCFC;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h3.calculator-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .calculator-input {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calculator-input label {
+            margin-bottom: 10px;
+        }
+
+        .calculator-input select, .calculator-input input {
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .calculator-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        button {
+            background-color: #1DA1F2;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;            
+            border-radius: 5px;
+            width: 25%;
+        }
+
+        button:hover {
+            background-color: #1A91DA;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #36454f;
+            color: #fff;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .result-box h4 {
+            margin-bottom: 10px;
+        }
+
+        .result {
+            font-size: 18px;
+        }
+
+        .highlight {
+            color: yellow;
+        }
+
+        @media (max-width: 600px) {
+            .calculator-container {
+                padding: 10px;
+            }
+
+            button {
+                width: 40%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h3 class="calculator-title">Yüzde Hesaplama Aracı</h3>
+        <form id="calculatorForm">
+            <div class="calculator-input">
+                <label for="operation">İşlem:</label>
+                <select id="operation" required>
+                    <option value="percentOf">A sayısının %B'si kaçtır?</option>
+                    <option value="percentIn">A sayısı, B sayısının yüzde kaçıdır?</option>
+                    <option value="changeRate">A sayısından B sayısına değişim oranı yüzde kaçtır?</option>
+                    <option value="increase">A sayısı, %B kadar artırılırsa kaç olur?</option>
+                    <option value="decrease">A sayısı, %B kadar azaltılırsa kaç olur?</option>
+                </select>
+
+                <label for="aValue">A Sayısı:</label>
+                <input type="number" id="aValue" placeholder="A sayısını giriniz" required>
+
+                <label for="bValue">B Sayısı:</label>
+                <input type="number" id="bValue" placeholder="B sayısını giriniz" required>
+            </div>
+
+            <div class="calculator-buttons">
+                <button type="button" onclick="calculate()">Hesapla</button>
+                <button type="button" onclick="resetForm()">Sıfırla</button>
+            </div>
+        </form>
+
+        <div id="resultBox" class="result-box">
+            <h4>Sonuç:</h4>
+            <div id="result" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const operation = document.getElementById('operation').value;
+            const aValue = parseFloat(document.getElementById('aValue').value);
+            const bValue = parseFloat(document.getElementById('bValue').value);
+
+            if (!operation || isNaN(aValue) || isNaN(bValue)) {
+                alert('Lütfen tüm alanları doldurunuz!');
+                return;
+            }
+
+            let result;
+
+            switch (operation) {
+                case 'percentOf':
+                    result = `<span class="highlight">${aValue}</span> sayısının <span class="highlight">%${bValue}</span>'si <span class="highlight">${((aValue * bValue) / 100).toFixed(2)}</span>'dir.`;
+                    break;
+                case 'percentIn':
+                    result = `<span class="highlight">${aValue}</span>, <span class="highlight">${bValue}</span> sayısının <span class="highlight">%${((aValue / bValue) * 100).toFixed(2)}</span>'sidir.`;
+                    break;
+                case 'changeRate':
+                    const changeRate = (((bValue - aValue) / aValue) * 100).toFixed(2);
+                    if (changeRate < 0) {
+                        result = `<span class="highlight">${aValue}</span> sayısından <span class="highlight">${bValue}</span> sayısına değişim oranı <span class="highlight">%${Math.abs(changeRate)}</span> azalır.`;
+                    } else {
+                        result = `<span class="highlight">${aValue}</span> sayısından <span class="highlight">${bValue}</span> sayısına değişim oranı <span class="highlight">%${changeRate}</span>'dir.`;
+                    }
+                    break;
+                case 'increase':
+                    result = `<span class="highlight">${aValue}</span>, <span class="highlight">%${bValue}</span> artırılırsa <span class="highlight">${(aValue + (aValue * bValue) / 100).toFixed(2)}</span> olur.`;
+                    break;
+                case 'decrease':
+                    result = `<span class="highlight">${aValue}</span>, <span class="highlight">%${bValue}</span> azaltılırsa <span class="highlight">${(aValue - (aValue * bValue) / 100).toFixed(2)}</span> olur.`;
+                    break;
+                default:
+                    result = 'Geçersiz işlem.';
+            }
+
+            document.getElementById('result').innerHTML = result;
+            document.getElementById('resultBox').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('calculatorForm').reset();
+            document.getElementById('resultBox').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

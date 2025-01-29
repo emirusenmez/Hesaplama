@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ortalama Hesaplama Aracı</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #FCFCFC;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h3.calculator-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #3C4852;
+            text-align: center;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .button-group button {
+            background-color: #e0e0e0;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+        }
+
+        .button-group button:hover {
+            background-color: #1DA1F2;
+            color: white;
+        }
+
+        .button-group input[type="number"] {
+            width: 60px;
+            padding: 8px;
+            margin-left: 10px;
+            display: none;
+            border-radius: 5px;
+        }
+
+        .calculator-input {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .calculator-input input {
+            width: calc(20% - 5px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .calculator-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .calculator-buttons button {
+            background-color: #1DA1F2;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        .calculator-buttons button:hover {
+            background-color: #1A91DA;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #3C4852;
+            color: #fff;
+            border-radius: 5px;
+        }
+
+        .result-box h4 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            color: #fff;
+        }
+
+        .result {
+            font-size: 16px;
+            background-color: #47535C;
+            padding: 10px;
+            font-weight: bold;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .result:last-child {
+            border-bottom: none;
+        }
+
+        .additional-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .additional-buttons button {
+            background-color: #47535C;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        .additional-buttons button:hover {
+            background-color: #3C4852;
+        }
+        h4{
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-container {
+                padding: 10px;
+            }
+
+            .calculator-buttons button, .additional-buttons button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+
+            .calculator-input input {
+                padding: 8px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h3 class="calculator-title">Ortalama Hesaplama Aracı</h3>
+        <h4>Kaç Adet Sayı Girmek istersiniz?</h4> 
+        <div class="button-group">
+            <button onclick="generateFields(2)">2</button>
+            <button onclick="generateFields(3)">3</button>
+            <button onclick="generateFields(4)">4</button>
+            <button onclick="generateFields(5)">5</button>
+            <button id="otherButton" onclick="toggleOtherInput()">Diğer</button>
+            <input type="number" id="otherInput" min="1" max="50" placeholder="Adet" oninput="generateFields(parseInt(this.value))">
+        </div>
+
+        <form id="averageForm">
+            <div id="numberInputs" class="calculator-input" style="display: none;"></div>
+
+            <div class="calculator-buttons" id="calcButtons" style="display: none;">
+                <button type="button" onclick="calculate()">Hesapla</button>
+                <button type="button" onclick="resetForm()">Temizle</button>
+            </div>
+        </form>
+
+        <div id="resultBox" class="result-box" style="display: none;">
+            <h4>Sonuç</h4>
+            <div class="result" id="calculationResult"></div>
+
+            <div class="additional-buttons">
+                <button onclick="copyResult()">Kopyala</button>
+                <button onclick="shareResult()">Paylaş</button>
+                <button onclick="printResult()">Yazdır</button>
+            </div>
+        </div>
+    </div>   
+
+    <script>
+        function generateFields(count) {
+            const numberInputs = document.getElementById('numberInputs');
+            numberInputs.innerHTML = '';
+
+            for (let i = 0; i < count; i++) {
+                const inputField = document.createElement('input');
+                inputField.type = 'number';
+                inputField.min = '0';
+                inputField.placeholder = `Sayı ${i + 1}`;
+                inputField.required = true;
+                numberInputs.appendChild(inputField);
+            }
+
+            numberInputs.style.display = 'flex';
+            document.getElementById('calcButtons').style.display = 'flex';
+        }
+
+        function toggleOtherInput() {
+            const otherInput = document.getElementById('otherInput');
+            otherInput.style.display = otherInput.style.display === 'inline-block' ? 'none' : 'inline-block';
+        }
+
+        function calculate() {
+            const inputs = document.querySelectorAll('#numberInputs input');
+            let sum = 0;
+            let product = 1;
+            let harmonicSum = 0;
+            let values = [];
+
+            inputs.forEach(input => {
+                const value = parseFloat(input.value);
+                sum += value;
+                product *= value;
+                harmonicSum += 1 / value;
+                values.push(value);
+            });
+
+            const average = (sum / inputs.length).toFixed(2);
+            const harmonicMean = (inputs.length / harmonicSum).toFixed(2);
+            const geometricMean = Math.pow(product, 1 / inputs.length).toFixed(2);
+            const stdDev = Math.sqrt(values.map(x => Math.pow(x - average, 2)).reduce((a, b) => a + b) / inputs.length).toFixed(2);
+
+            let resultText = `
+                Girilen sayıların ortalaması: ${average}
+                <hr>
+                Harmonik Ortalama: ${harmonicMean}
+                <hr>
+                Geometrik Ortalama: ${geometricMean}
+                <hr>
+                Standart Sapma: ${stdDev}
+            `;
+
+            document.getElementById('calculationResult').innerHTML = resultText;
+            document.getElementById('resultBox').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('averageForm').reset();
+            document.getElementById('numberInputs').style.display = 'none';
+            document.getElementById('calcButtons').style.display = 'none';
+            document.getElementById('resultBox').style.display = 'none';
+            document.getElementById('otherInput').style.display = 'none';
+        }
+
+        function copyResult() {
+            const resultText = document.getElementById('calculationResult').innerText;
+            navigator.clipboard.writeText(resultText).then(() => {
+                alert("Sonuç kopyalandı!");
+            }).catch(err => {
+                alert("Sonuç kopyalanamadı: " + err);
+            });
+        }
+
+        function printResult() {
+            window.print();
+        }
+
+        function shareResult() {
+            const resultText = document.getElementById('calculationResult').innerText;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Ortalama Hesaplama Sonucu',
+                    text: resultText
+                }).then(() => {
+                    console.log('Sonuç paylaşıldı');
+                }).catch(err => {
+                    console.error('Paylaşma hatası: ', err);
+                });
+            } else {
+                alert("Paylaşma özelliği tarayıcınız tarafından desteklenmiyor.");
+            }
+        }
+    </script>
+</body>
+</html>
