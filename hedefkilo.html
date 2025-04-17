@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kilo Hesaplama</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #e9f7ef;
+            border-radius: 5px;
+            border: 1px solid #d4edda;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Kilo Hesaplama</h1>
+
+        <label for="kilo">Mevcut Kilonuz (kg):</label>
+        <input type="number" id="kilo" placeholder="Mevcut kilonuzu girin" required>
+
+        <label for="boy">Boyunuz (cm):</label>
+        <input type="number" id="boy" placeholder="Boyunuzu girin" required>
+
+        <label for="yas">Yaşınız:</label>
+        <input type="number" id="yas" placeholder="Yaşınızı girin" required>
+
+        <label for="cinsiyet">Cinsiyetiniz:</label>
+        <select id="cinsiyet">
+            <option value="erkek">Erkek</option>
+            <option value="kadın">Kadın</option>
+        </select>
+
+        <label for="aktivite">Aktivite Seviyesi:</label>
+        <select id="aktivite">
+            <option value="sedanter">Sedanter</option>
+            <option value="hafif_aktif">Hafif Aktif</option>
+            <option value="orta">Orta</option>
+            <option value="cok_aktif">Çok Aktif</option>
+            <option value="asiri_aktif">Aşırı Aktif</option>
+        </select>
+
+        <label for="hedefKilo">Hedef Kilonuz (kg):</label>
+        <input type="number" id="hedefKilo" placeholder="Hedef kilonuzu girin" required>
+
+        <label for="sure">Hedefe Ulaşmak İçin Süre (ay):</label>
+        <input type="number" id="sure" placeholder="Süreyi girin" required>
+
+        <button onclick="hesapla()">Hesapla</button>
+
+        <div id="sonuc" class="result" style="display: none;">
+            <h2>Sonuçlar</h2>
+            <p><strong>Toplam Kalori:</strong> <span id="toplamKalori"></span> kalori</p>
+            <p><strong>Protein:</strong> <span id="protein"></span> gram</p>
+            <p><strong>Karbonhidrat:</strong> <span id="karbonhidrat"></span> gram</p>
+            <p><strong>Yağ:</strong> <span id="yag"></span> gram</p>
+        </div>
+    </div>
+
+    <script>
+        function hesapla() {
+            // Kullanıcıdan verileri al
+            let kilo = parseFloat(document.getElementById("kilo").value);
+            let boy = parseFloat(document.getElementById("boy").value);
+            let yas = parseInt(document.getElementById("yas").value);
+            let cinsiyet = document.getElementById("cinsiyet").value;
+            let aktivite = document.getElementById("aktivite").value;
+            let hedefKilo = parseFloat(document.getElementById("hedefKilo").value);
+            let sure = parseInt(document.getElementById("sure").value);
+
+            // BMR hesaplama (Harris-Benedict formülü)
+            let bmr;
+            if (cinsiyet === "erkek") {
+                bmr = 88.362 + (13.397 * kilo) + (4.799 * boy) - (5.677 * yas);
+            } else {
+                bmr = 447.593 + (9.247 * kilo) + (3.098 * boy) - (4.330 * yas);
+            }
+
+            // Aktivite seviyesine göre TDEE hesaplama
+            let tdee;
+            switch (aktivite) {
+                case "sedanter":
+                    tdee = bmr * 1.2;
+                    break;
+                case "hafif_aktif":
+                    tdee = bmr * 1.375;
+                    break;
+                case "orta":
+                    tdee = bmr * 1.55;
+                    break;
+                case "cok_aktif":
+                    tdee = bmr * 1.725;
+                    break;
+                case "asiri_aktif":
+                    tdee = bmr * 1.9;
+                    break;
+            }
+
+            // Kilo kaybı için kalori açığı hesaplama
+            let kiloVermeHedefi = kilo - hedefKilo;
+            let toplamCaloriAcigi = kiloVermeHedefi * 7700;
+            let gunlukCaloriAcigi = toplamCaloriAcigi / (sure * 30);
+            let hedefKalori = tdee - gunlukCaloriAcigi;
+
+            // Makro besinlerin hesaplanması
+            let proteinOrani = 0.30;
+            let karbonhidratOrani = 0.40;
+            let yagOrani = 0.30;
+
+            let proteinCalori = hedefKalori * proteinOrani;
+            let karbonhidratCalori = hedefKalori * karbonhidratOrani;
+            let yagCalori = hedefKalori * yagOrani;
+
+            let proteinGram = proteinCalori / 4;
+            let karbonhidratGram = karbonhidratCalori / 4;
+            let yagGram = yagCalori / 9;
+
+            // Sonuçları gösterme
+            document.getElementById("toplamKalori").textContent = hedefKalori.toFixed(2);
+            document.getElementById("protein").textContent = proteinGram.toFixed(2);
+            document.getElementById("karbonhidrat").textContent = karbonhidratGram.toFixed(2);
+            document.getElementById("yag").textContent = yagGram.toFixed(2);
+
+            // Sonuç kısmını göster
+            document.getElementById("sonuc").style.display = "block";
+        }
+    </script>
+
+</body>
+</html>
